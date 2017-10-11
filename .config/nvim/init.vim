@@ -26,7 +26,7 @@ call plug#begin('~/.local/share/nvim/plugged')
     nnoremap <silent> <Leader>n :NERDTreeToggle<CR>      
   " }}}
 
-  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } | Plug 'junegunn/fzf.vim'
+  Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
   " {{{
     let $FZF_DEFAULT_COMMAND = 'ag --ignore-dir="/public" --ignore-dir="/vendor" --ignore-dir="/docs" --ignore-dir="/app/assets/stylesheets/vendor" --ignore-dir="/app/assets/javascripts/vendor" --ignore="*.bundle.*" -l -g ""'
     nnoremap <silent> <Leader>o :FZF<CR>

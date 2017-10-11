@@ -1,3 +1,11 @@
+# Install zsh
+brew install zsh
+
+# Update zshrc
+rm ~/.zshrc
+ln -s $PWD/.zshrc ~/.zshrc
+ln -s $PWD/.atlassian.zsh ~/.atlassian.zsh
+
 # Make sure the Neovim config directory is there
 mkdir -p ~/.config/nvim
 
