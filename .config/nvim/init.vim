@@ -5,12 +5,6 @@ call plug#begin('~/.local/share/nvim/plugged')
 
   Plug 'mhartington/oceanic-next'
 
-  Plug 'mileszs/ack.vim'
-  " {{{
-    let g:ackprg = 'ag --nogroup --nocolor --column --ignore-dir="/public" --ignore-dir="/vendor" --ignore-dir="/app/assets/stylesheets/vendor" --ignore-dir="/app/assets/javascripts/vendor" --ignore="*.bundle.*"'
-    nnoremap <Leader>f :Ack<Space>
-  " }}}
-
   Plug 'scrooloose/nerdtree' | Plug 'Xuyuanp/nerdtree-git-plugin'
   " {{{
     let g:NERDTreeWinPos = 'right'
@@ -26,11 +20,14 @@ call plug#begin('~/.local/share/nvim/plugged')
     nnoremap <silent> <Leader>n :NERDTreeToggle<CR>      
   " }}}
 
-  Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
+  Plug 'cloudhead/neovim-fuzzy'
   " {{{
-    let $FZF_DEFAULT_COMMAND = 'ag --ignore-dir="/public" --ignore-dir="/vendor" --ignore-dir="/docs" --ignore-dir="/app/assets/stylesheets/vendor" --ignore-dir="/app/assets/javascripts/vendor" --ignore="*.bundle.*" -l -g ""'
-    nnoremap <silent> <Leader>o :FZF<CR>
-    nnoremap <Leader>b :Buffers<CR>
+    nnoremap <silent> <Leader>o :FuzzyOpen<CR>
+  " }}}
+
+  Plug 'mhinz/vim-grepper'
+  " {{{
+    nnoremap <silent> <Leader>f :Grepper<CR>
   " }}}
 
   Plug 'vim-airline/vim-airline'

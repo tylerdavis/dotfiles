@@ -1,23 +1,31 @@
-# Install zsh
+# Zsh
+## Install zsh
 brew install zsh
 
-# Update zshrc
+## Install oh-my-zsh
+sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+## Update zshrc
 rm ~/.zshrc
 ln -s $PWD/.zshrc ~/.zshrc
 ln -s $PWD/.atlassian.zsh ~/.atlassian.zsh
 
-# Make sure the Neovim config directory is there
+# Shell tools
+brew install fzy ripgrep
+
+# Neovim
+## Make sure the Neovim config directory is there
 mkdir -p ~/.config/nvim
 
-# Symlink the init file
+## Symlink the init file
 ln -s $PWD/.config/nvim/init.vim ~/.config/nvim/init.vim
 
-# Install VimPlug
+## Install VimPlug
 curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-# Install Python Dependencies
+## Install Python Dependencies
 pip install neovim
 
-# Install Ruby Dependencies
+## Install Ruby Dependencies
 gem install neovim
