@@ -15,6 +15,8 @@ ln -s $PWD/.soundviz.zsh ~/.soundviz.zsh
 brew install fzy ripgrep
 
 # Neovim
+brew install neovim
+
 ## Make sure the Neovim config directory is there
 mkdir -p ~/.config/nvim
 
@@ -30,3 +32,5 @@ pip install neovim
 
 ## Install Ruby Dependencies
 gem install neovim
+
+

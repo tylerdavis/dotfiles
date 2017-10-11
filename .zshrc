@@ -2,7 +2,7 @@ alias vim=nvim
 
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
-export REACT_EDITOR='vim'
+export REACT_EDITOR='nvim'
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -20,7 +20,7 @@ alias fsw='foreman start -f Procfile.dev -c web=1,webpack=1,worker=1,worker_nm=1
 alias tails='tail'
 
 # Ruby environment loader
-export BUNDLER_EDITOR="vim"
+export BUNDLER_EDITOR="nvim"
 export DEPLOY_USER=`whoami`
 
 # nvm loader
@@ -41,7 +41,6 @@ function rtest() {
       bundle exec rake test
   fi
 }
-
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 

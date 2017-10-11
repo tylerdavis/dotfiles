@@ -5,21 +5,6 @@ call plug#begin('~/.local/share/nvim/plugged')
 
   Plug 'mhartington/oceanic-next'
 
-  Plug 'scrooloose/nerdtree' | Plug 'Xuyuanp/nerdtree-git-plugin'
-  " {{{
-    let g:NERDTreeWinPos = 'right'
-    autocmd StdinReadPre * let s:std_in=1
-    " Open NerdTree when calling vim in a directory
-    autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
-    " Open NerdTree when calling vim with a directory
-    autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | wincmd p | endif
-    " Close vim if NerdTree is the only thing open
-    autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-    " Open NerdTree in new tabs
-    autocmd TabNew * NERDTree | wincmd p
-    nnoremap <silent> <Leader>n :NERDTreeToggle<CR>      
-  " }}}
-
   Plug 'cloudhead/neovim-fuzzy'
   " {{{
     nnoremap <silent> <Leader>o :FuzzyOpen<CR>
@@ -43,10 +28,11 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'tpope/vim-rails'
   Plug 'tpope/vim-rake'
   Plug 'tpope/vim-bundler'
-
   Plug 'tpope/vim-fugitive'
-
   Plug 'tpope/vim-commentary'
+
+  Plug 'tpope/vim-vinegar'
+
   Plug 'othree/javascript-libraries-syntax.vim'
   " {{{
   let g:user_javascript_libs = 'uderscore,jquery,react'
