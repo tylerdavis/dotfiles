@@ -9,6 +9,7 @@ sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/i
 rm ~/.zshrc
 ln -s $PWD/.zshrc ~/.zshrc
 ln -s $PWD/.atlassian.zsh ~/.atlassian.zsh
+ln -s $PWD/.soundviz.zsh ~/.soundviz.zsh
 
 # Shell tools
 brew install fzy ripgrep

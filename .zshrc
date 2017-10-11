@@ -52,6 +52,7 @@ autoload -U compinit && compinit
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.atlassian.zsh ] && source ~/.atlassian.zsh
+[ -f ~/.soundviz.zsh ] && source ~/.soundviz.zsh
 
 export ANDROID_HOME=${HOME}/Library/Android/sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
