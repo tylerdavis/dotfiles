@@ -45,3 +45,5 @@ gem install neovim rcodetools
 git clone https://github.com/orta/fastri.git
 cd fastri && ruby setup.rb && cd .. && rm -rf ./fastri
 
+## Last thing, install your vim plugins
+nvim -c ':PlugInstall | quit | quit'
