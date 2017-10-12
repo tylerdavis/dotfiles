@@ -24,6 +24,8 @@ call plug#begin('~/.local/share/nvim/plugged')
   
   Plug 'terryma/vim-multiple-cursors'
 
+  Plug 'sbdchd/neoformat'
+
   Plug 'vim-ruby/vim-ruby'
   Plug 'tpope/vim-rails'
   Plug 'tpope/vim-rake'

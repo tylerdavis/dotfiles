@@ -3,16 +3,21 @@
 brew install zsh
 
 ## Install oh-my-zsh
-sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+[ -d "~/.oh-my-zsh" ] && sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
 ## Update zshrc
-rm ~/.zshrc
-ln -s $PWD/.zshrc ~/.zshrc
-ln -s $PWD/.atlassian.zsh ~/.atlassian.zsh
-ln -s $PWD/.soundviz.zsh ~/.soundviz.zsh
 
-## Source the new config
-source ~/.zshrc
+check_and_link () {
+  if [ ! -f $PWD/$1 ]; then
+    ln -s $PWD/$1 ~/$1
+  else
+    echo "$1 already exists.  skipping..."
+  fi
+}
+
+check_and_link .zshrc
+check_and_link .atlassian.zsh
+check_and_link .soundviz.zsh
 
 # Shell tools
 brew install fzy ripgrep python3
@@ -34,5 +39,9 @@ curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
 pip3 install --user neovim jedi psutil setproctitle
 
 ## Install Ruby Dependencies
-gem install neovim
+gem install neovim rcodetools
+
+## Install FastRi
+git clone https://github.com/orta/fastri.git
+cd fastri && ruby setup.rb && cd .. && rm -rf ./fastri
 
