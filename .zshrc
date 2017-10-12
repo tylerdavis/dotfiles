@@ -60,3 +60,5 @@ export ANDROID_SDK_ROOT=$ANDROID_HOME
 export GOPATH=${HOME}/Development/go
 export GOBIN=${GOPATH}/bin
 export PATH=${PATH}:${GOBIN}
+
+bindkey "^X\\x7f" backward-kill-line

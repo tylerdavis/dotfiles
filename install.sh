@@ -11,6 +11,9 @@ ln -s $PWD/.zshrc ~/.zshrc
 ln -s $PWD/.atlassian.zsh ~/.atlassian.zsh
 ln -s $PWD/.soundviz.zsh ~/.soundviz.zsh
 
+## Source the new config
+source ~/.zshrc
+
 # Shell tools
 brew install fzy ripgrep
 
