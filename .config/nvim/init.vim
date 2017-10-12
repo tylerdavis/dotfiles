@@ -68,13 +68,14 @@ call plug#begin('~/.local/share/nvim/plugged')
     nnoremap <Leader>gt :GitGutterAll<CR>
   " }}}
   
-  Plug 'lifepillar/vim-mucomplete'
+  Plug 'roxma/nvim-completion-manager'
   " {{{
-    set noshowmode shortmess+=c
-    set completeopt+=menuone
-    set completeopt+=noinsert
-    set completeopt+=noinsert,noselect
-    let g:mucomplete#enable_auto_at_startup = 1
+    Plug 'roxma/nvim-cm-tern'
+    Plug 'roxma/ncm-flow'
+    Plug 'roxma/ncm-rct-complete'
+    Plug 'calebeby/ncm-css'
+    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
   " }}}
 
 call plug#end()
