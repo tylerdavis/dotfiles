@@ -1,0 +1,39 @@
+[core]
+	excludesfile = ~/.gitignore
+	autocrlf = input
+[user]
+	name = Tyler Davis
+	email = tyler@tmd.io
+[color]
+	ui = true
+[push]
+	default = current
+[alias]
+	st = status -s
+	ci = commit
+	br = branch
+	co = checkout
+	df = diff
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit
+[difftool]
+	prompt = false
+[mergetool]
+	prompt = false
+[filter "media"]
+	required = true
+	clean = git media clean %f
+	smudge = git media smudge %f
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[filter "lfs"]
+	required = true
+	process = git-lfs filter-process
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+[credential]
+	helper = !aws codecommit credential-helper $@
+	UseHttpPath = true

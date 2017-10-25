@@ -5,10 +5,8 @@ brew install zsh
 ## Install oh-my-zsh
 [ -d "~/.oh-my-zsh" ] && sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
-## Update zshrc
-
 check_and_link () {
-  if [ ! -f $PWD/$1 ]; then
+  if [ ! -f ~/$1 ]; then
     ln -s $PWD/$1 ~/$1
   else
     echo "$1 already exists.  skipping..."
@@ -18,6 +16,8 @@ check_and_link () {
 check_and_link .zshrc
 check_and_link .atlassian.zsh
 check_and_link .soundviz.zsh
+check_and_link .gitconfig
+check_and_link .gitignore
 
 # Shell tools
 brew install fzy ripgrep python3
