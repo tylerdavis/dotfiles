@@ -21,7 +21,7 @@ check_and_link .gitignore
 check_and_link .tmux.conf
 
 # Shell tools
-brew install fzy ripgrep python3 ccat
+brew install fzy ripgrep python3
 
 # Neovim
 brew install neovim
@@ -37,7 +37,7 @@ curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 ## Install Python Dependencies
-pip3 install --user neovim jedi psutil setproctitle
+pip3 install --user neovim jedi psutil setproctitle Pygments
 
 ## Install Ruby Dependencies
 gem install neovim rcodetools
