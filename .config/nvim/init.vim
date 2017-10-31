@@ -101,6 +101,11 @@ set expandtab           " Insert spaces when TAB is pressed.
 set tabstop=2           " Render TABs using this many spaces.
 set shiftwidth=2        " Indentation amount for < and > commands.
 
+" Soft line wrapping
+set wrap
+set linebreak
+set nolist
+
 " Setup mouse
 set mouse=a mousemodel=popup " Click to bring cursor to mouse position
 
