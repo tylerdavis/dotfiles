@@ -20,6 +20,13 @@ check_and_link .gitconfig
 check_and_link .gitignore
 check_and_link .tmux.conf
 
+# iterm2
+brew install caskroom/versions/iterm2-beta
+# Setup iterm2 preferences directory
+defaults write com.googlecode.iterm2.plist PrefsCustomFolder -string "$PWD/iterm2_profile"
+# Tell iterm to use the custom preferences in the directory
+defaults write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -bool true
+
 # Shell tools
 brew install fzy ripgrep python3
 
