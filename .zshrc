@@ -18,7 +18,7 @@ source $ZSH/oh-my-zsh.sh
 alias fs='foreman start -f Procfile.dev -c web=1,webpack=1'
 alias fsw='foreman start -f Procfile.dev -c web=1,webpack=1,worker=1,worker_nm=1,worker_other=1'
 alias tails='tail'
-alias cat='pygmentize -g'
+alias cat='ccat'
 
 # Ruby environment loader
 export BUNDLER_EDITOR="nvim"
