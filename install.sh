@@ -9,6 +9,10 @@ brew install zsh
 ## Install oh-my-zsh
 [ -d "~/.oh-my-zsh" ] && sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
+## oh-my-zsh plugins
+### zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
 check_and_link () {
   if [ ! -f ~/$1 ]; then
     ln -s $PWD/$1 ~/$1

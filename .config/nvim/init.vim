@@ -32,6 +32,7 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'tpope/vim-bundler'
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-commentary'
+  Plug 'tpope/vim-endwise'
 
   Plug 'tpope/vim-vinegar'
 
