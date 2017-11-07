@@ -14,11 +14,20 @@ plugins=(git osx zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
+function pcat() {
+  if [ $(file --mime $@) =~ binary ]
+  then
+    echo That is a binary file; exit 1
+  else
+    highlight -O ansi --line-numbers --force $@ || cat $@
+  fi
+}
+
 # StatusPage specific stuff
 alias fs='foreman start -f Procfile.dev -c web=1,webpack=1'
 alias fsw='foreman start -f Procfile.dev -c web=1,webpack=1,worker=1,worker_nm=1,worker_other=1'
 alias tails='tail'
-alias pcat='pygmentize -g'
+alias cat=pcat
 
 # Ruby environment loader
 export BUNDLER_EDITOR="nvim"
@@ -50,7 +59,6 @@ fpath=(/usr/local/share/zsh/site-functions /usr/local/share/zsh-completions /Use
 fpath=(/usr/local/share/zsh/site-functions /usr/local/share/zsh-completions $fpath)
 autoload -U compinit && compinit
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.atlassian.zsh ] && source ~/.atlassian.zsh
 [ -f ~/.soundviz.zsh ] && source ~/.soundviz.zsh
 
@@ -63,3 +71,9 @@ export GOBIN=${GOPATH}/bin
 export PATH=${PATH}:${GOBIN}
 
 bindkey "^X\\x7f" backward-kill-line
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export FZF_DEFAULT_COMMAND='
+  (git ls-tree -r --name-only HEAD ||
+   find . -path "*/\.*" -prune -o -type f -print -o -type l -print |
+      sed s/^..//) 2> /dev/null'

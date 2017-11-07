@@ -2,26 +2,29 @@ let mapleader="\<SPACE>"
 
 " Plugins
 call plug#begin('~/.local/share/nvim/plugged')
-
   Plug 'mhartington/oceanic-next'
 
-  Plug 'cloudhead/neovim-fuzzy'
+  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+  Plug 'junegunn/fzf.vim'
   " {{{
-    nnoremap <silent> <Leader>o :FuzzyOpen<CR>
-  " }}}
+    set rtp+=~/.fzf/bin/fzf
+    nnoremap <silent> <Leader>o :FZF<CR>
 
-  Plug 'mhinz/vim-grepper'
-  " {{{
-    nnoremap <silent> <Leader>f :Grepper<CR>
+    command! -bang -nargs=* Rg
+    \ call fzf#vim#grep(
+    \   'rg --column --line-number --no-heading --hidden --fixed-strings --follow --ignore-case --no-ignore --glob "!.git/*" --glob "!log/*" --color=always '.shellescape(<q-args>), 1, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'))
+
+    nnoremap <silent> <Leader>f :Rg<space>
   " }}}
 
   Plug 'vim-airline/vim-airline'
+  Plug 'ap/vim-buftabline'
   " {{{
-    let g:airline#extensions#tabline#enabled = 1
-    let g:airline#extensions#tabline#tab_min_count = 2
-    let g:airline#extensions#tabline#buffer_min_count = 2
+    set hidden
+    nnoremap <A-]> :bnext<CR>
+    nnoremap <A-[> :bprev<CR>
   " }}}
-  
+
   Plug 'terryma/vim-multiple-cursors'
 
   Plug 'sbdchd/neoformat'
@@ -170,15 +173,6 @@ set clipboard+=unnamedplus
 :imap jj <Esc>
 " Save all buffers and quit
 nnoremap <Leader>wq :xa<CR>                 
-
-" Add new tab after current tab
-nnoremap <Leader>t :tabnew<CR>              
-" Close current tab
-nnoremap <Leader>T :tabclose<CR>
-" Next Tab
-nnoremap <A-}> :tabnext<CR>
-" Previous Tab
-nnoremap <A-{> :tabprev<CR>
 
 " Split the window horizontally
 nnoremap <Leader>- <C-w>s
