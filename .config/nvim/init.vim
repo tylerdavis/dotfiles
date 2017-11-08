@@ -47,6 +47,12 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'javascript.jsx'] }
   Plug 'mxw/vim-jsx', { 'for': ['javascript', 'javascript.jsx'] }
 
+  Plug 'hashivim/vim-terraform'
+  " {{{
+    let g:terraform_align=1
+    autocmd FileType terraform setlocal commentstring=#%s
+  " }}}
+
   Plug 'jiangmiao/auto-pairs'
   Plug 'easymotion/vim-easymotion'
   Plug 'Valloric/MatchTagAlways' 
@@ -54,8 +60,7 @@ call plug#begin('~/.local/share/nvim/plugged')
   " {{{
     let g:user_emmet_install_global = 0
     autocmd FileType html,css,jsx EmmetInstall
-    " let g:user_emmet_expandabbr_key='<Tab>'
-    " imap <buffer> <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
+    " let g:user_emmet_expandabbr_key='<tab>'
   " }}}
 
   Plug 'airblade/vim-gitgutter'
@@ -74,10 +79,10 @@ call plug#begin('~/.local/share/nvim/plugged')
     nnoremap <Leader>gt :GitGutterAll<CR>
   " }}}
   
-  Plug 'roxma/nvim-completion-manager'
+  Plug 'roxma/nvim-completion-manager', { 'do' : 'pip3 install neovim psutil setproctitle' }
   " {{{
     Plug 'roxma/nvim-cm-tern'
-    Plug 'roxma/ncm-flow'
+    Plug 'roxma/ncm-flow', {'do': 'npm i -g flow-bin'}
     Plug 'roxma/ncm-rct-complete'
     Plug 'calebeby/ncm-css'
     inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
@@ -93,11 +98,17 @@ let g:python3_host_prog = '/usr/local/bin/python3'
 :au FocusLost * silent! wa
 
 " Setup
-syntax enable
+syntax enable                     " Enable syntax highlighting
+set autoread                      " Automatically read file if it has been changed outside of vim
+set autowrite                     " Automatically :write before running commands
+set backspace=2                   " allow backspace over line breaks
+set clipboard+=unnamedplus        " use system clipboard
+set gdefault                      " Replace all of the matches on a line, instead of just the first one
+let g:html_indent_tags = 'li\|p' " Treat <li> and <p> tags like the block tags they are
+
 set showcmd             " Show (partial) command in status line.
 set showmatch           " Show matching brackets.
 set showmode            " Show current mode.
-set ruler               " Show the line and column numbers of the cursor.
 set number              " Show the line numbers on the left side.
 set formatoptions+=o    " Continue comment marker in new lines.
 set textwidth=0         " Hard-wrap long lines as you type them.
@@ -135,6 +146,9 @@ if !&sidescrolloff
 endif
 set nostartofline       " Do not jump to first character with page commands.
 
+
+set hlsearch            " highlight search results
+set incsearch           " incremental search
 set showmatch
 set ignorecase          " Make searching case insensitive
 set smartcase           " ... unless the query has capital letters.
@@ -143,6 +157,21 @@ set magic               " Use 'magic' patterns (extended regular expressions).
 
 " Change cursor shape on mode change
 :let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
+
+set wildignore+=tmp/** " Ignore stuff that can't be opened
+set wildmenu " Enables a menu at the bottom of the vim window.
+set wildmode=longest:full,full
+
+" When editing a file, always jump to the last known cursor position.
+" Don't do it for commit messages, when the position is invalid, or when
+" inside an event handler.
+augroup vimrcEx
+  autocmd!
+  autocmd BufReadPost *
+        \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
+        \   exe "normal g`\"" |
+        \ endif
+augroup END
 
 " Relative numbering
 function! NumberToggle()
@@ -164,7 +193,6 @@ syntax enable
 colorscheme OceanicNext
 let g:airline_theme='oceanicnext'
 
-set clipboard+=unnamedplus
 
 """""""""""""""
 " Leader Maps "

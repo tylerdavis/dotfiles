@@ -2,7 +2,9 @@ alias vim=nvim
 
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
-export REACT_EDITOR='nvim'
+export VISUAL=nvim
+export EDITOR="$VISUAL"
+export REACT_EDITOR="$VISUAL"
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -15,12 +17,7 @@ plugins=(git osx zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
 
 function pcat() {
-  if [ $(file --mime $@) =~ binary ]
-  then
-    echo That is a binary file; exit 1
-  else
-    highlight -O ansi --line-numbers --force $@ || cat $@
-  fi
+  highlight -O ansi --line-numbers --force $@ || cat $@
 }
 
 # StatusPage specific stuff
@@ -28,6 +25,7 @@ alias fs='foreman start -f Procfile.dev -c web=1,webpack=1'
 alias fsw='foreman start -f Procfile.dev -c web=1,webpack=1,worker=1,worker_nm=1,worker_other=1'
 alias tails='tail'
 alias cat=pcat
+alias rg="rg -g '!*.bundle.*.js' -g '!vendor' -p"
 
 # Ruby environment loader
 export BUNDLER_EDITOR="nvim"
