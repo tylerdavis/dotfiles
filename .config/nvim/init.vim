@@ -12,7 +12,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 
     command! -bang -nargs=* Rg
     \ call fzf#vim#grep(
-    \   'rg --column --line-number --no-heading --hidden --fixed-strings --follow --ignore-case --no-ignore --glob "!.git/*" --glob "!log/*" --color=always '.shellescape(<q-args>), 1, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'))
+    \   'rg --column --line-number --no-heading --hidden --fixed-strings --follow --ignore-case -g "!guides/*" -g "!.git/*" -g "!log/*" -g "!*.bundle.*.js" -g "!vendor" --color=always '.shellescape(<q-args>), 1, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'))
 
     nnoremap <silent> <Leader>f :Rg<space>
   " }}}
@@ -28,6 +28,8 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'terryma/vim-multiple-cursors'
 
   Plug 'sbdchd/neoformat'
+
+  Plug 'ngmy/vim-rubocop'
 
   Plug 'vim-ruby/vim-ruby'
   Plug 'tpope/vim-rails'
@@ -46,6 +48,7 @@ call plug#begin('~/.local/share/nvim/plugged')
   
   Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'javascript.jsx'] }
   Plug 'mxw/vim-jsx', { 'for': ['javascript', 'javascript.jsx'] }
+  Plug 'leafgarland/typescript-vim'
 
   Plug 'hashivim/vim-terraform'
   " {{{
@@ -201,6 +204,7 @@ let g:airline_theme='oceanicnext'
 :imap jj <Esc>
 " Save all buffers and quit
 nnoremap <Leader>wq :xa<CR>                 
+nnoremap <Leader>w :w<CR>
 
 " Split the window horizontally
 nnoremap <Leader>- <C-w>s

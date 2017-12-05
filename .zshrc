@@ -12,7 +12,7 @@ export REACT_EDITOR="$VISUAL"
 # time that oh-my-zsh is loaded.
 ZSH_THEME="robbyrussell"
 
-plugins=(git osx zsh-syntax-highlighting)
+plugins=(aws git osx zsh-syntax-highlighting terraform)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -75,3 +75,5 @@ export FZF_DEFAULT_COMMAND='
   (git ls-tree -r --name-only HEAD ||
    find . -path "*/\.*" -prune -o -type f -print -o -type l -print |
       sed s/^..//) 2> /dev/null'
+
+export PATH="$HOME/.yarn/bin:$PATH"

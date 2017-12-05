@@ -284,9 +284,9 @@
 	<key>NSWindow Frame SessionsPreferences</key>
 	<string>400 186 606 469 0 0 2560 1418 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>734 818 796 473 0 0 2560 1418 </string>
+	<string>811 467 937 512 0 0 2560 1418 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>-1280 171 850 876 -1680 34 1680 1028 </string>
+	<string>0 0 2560 1418 0 0 2560 1418 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>690 72 850 876 0 0 1680 1028 </string>
 	<key>New Bookmarks</key>
@@ -928,7 +928,7 @@
 			<key>Transparency</key>
 			<real>0.0</real>
 			<key>Unlimited Scrollback</key>
-			<false/>
+			<true/>
 			<key>Use Bold Font</key>
 			<true/>
 			<key>Use Bright Bold</key>
@@ -947,10 +947,16 @@
 			<string>/Users/tmd</string>
 		</dict>
 	</array>
+	<key>NoSyncHaveUsedCopyMode</key>
+	<true/>
 	<key>NoSyncHaveWarnedAboutPasteConfirmationChange</key>
 	<true/>
 	<key>NoSyncInstallationId</key>
 	<string>25818861-BA9C-4EE2-A091-CC3A03347BAA</string>
+	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
+	<true/>
+	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
+	<integer>0</integer>
 	<key>NoSyncPermissionToShowTip</key>
 	<false/>
 	<key>NoSyncTimeOfFirstLaunchOfVersionWithTip</key>
@@ -1001,7 +1007,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2017-10-30T17:04:16Z</date>
+	<date>2017-11-14T15:13:20Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>ShowFullScreenTabBar</key>
@@ -1016,8 +1022,8 @@
 	<integer>0</integer>
 	<key>ToolbeltTools</key>
 	<array>
-		<string>Profiles</string>
 		<string>Jobs</string>
+		<string>Command History</string>
 	</array>
 	<key>UseBorder</key>
 	<false/>
@@ -1030,6 +1036,6 @@
 	<key>findRegex_iTerm</key>
 	<false/>
 	<key>iTerm Version</key>
-	<string>3.1.4</string>
+	<string>3.1.5</string>
 </dict>
 </plist>
