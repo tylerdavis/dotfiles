@@ -97,6 +97,18 @@ call plug#end()
 let g:python_host_prog = '/usr/local/bin/python2'
 let g:python3_host_prog = '/usr/local/bin/python3'
 
+" Run a specific test in the terminal
+function RailsTest()
+  let file_path = expand('%:p')
+  let test_line = search('\Wit\W.*\Wdo', 'bcn')
+  let test_command = "bin/rails test " . file_path . ":" . test_line
+  split
+  enew
+  call termopen(test_command)
+endfunction
+
+nnoremap <silent> <Leader>rt call RailsTest()
+
 " Save all files on loss of focus
 :au FocusLost * silent! wa
 
