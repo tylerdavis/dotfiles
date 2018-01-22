@@ -12,6 +12,10 @@ export REACT_EDITOR="$VISUAL"
 # time that oh-my-zsh is loaded.
 ZSH_THEME="robbyrussell"
 
+[ -f ~/.atlassian.zsh ] && source ~/.atlassian.zsh
+[ -f ~/.soundviz.zsh ] && source ~/.soundviz.zsh
+[ -f ~/.deployhub.zsh ] && source ~/.deployhub.zsh
+
 plugins=(aws git osx zsh-syntax-highlighting terraform)
 
 source $ZSH/oh-my-zsh.sh
@@ -41,24 +45,12 @@ NC='\033[0m'
 unset DYLD_LIBRARY_PATH
 unset LD_LIBRARY_PATH
 
-function rtest() {
-  if [ "$1" != "" ] # or better, if [ -n "$1" ]
-  then
-      bundle exec rake test TEST=$1
-  else
-      bundle exec rake test
-  fi
-}
-
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-fpath=(/usr/local/share/zsh/site-functions /usr/local/share/zsh-completions /Users/tylerdavis/.oh-my-zsh/plugins/git /Users/tylerdavis/.oh-my-zsh/functions /Users/tylerdavis/.oh-my-zsh/completions /usr/local/share/zsh/site-functions /usr/share/zsh/site-functions /usr/share/zsh/5.2/functions)
+fpath=(/usr/local/share/zsh/site-functions /Users/tylerdavis/.oh-my-zsh/plugins/git /Users/tylerdavis/.oh-my-zsh/functions /Users/tylerdavis/.oh-my-zsh/completions /usr/local/share/zsh/site-functions /usr/share/zsh/site-functions /usr/share/zsh/5.3/functions)
+fpath=(/usr/local/share/zsh-completions $fpath)
 
-fpath=(/usr/local/share/zsh/site-functions /usr/local/share/zsh-completions $fpath)
 autoload -U compinit && compinit
-
-[ -f ~/.atlassian.zsh ] && source ~/.atlassian.zsh
-[ -f ~/.soundviz.zsh ] && source ~/.soundviz.zsh
 
 export ANDROID_HOME=${HOME}/Library/Android/sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
@@ -66,7 +58,7 @@ export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 export ANDROID_SDK_ROOT=$ANDROID_HOME
 export GOPATH=${HOME}/Development/go
 export GOBIN=${GOPATH}/bin
-export PATH=${PATH}:${GOBIN}
+export PATH=${PATH}:${GOBIN}:/usr/local/sbin
 
 bindkey "^X\\x7f" backward-kill-line
 
@@ -77,3 +69,8 @@ export FZF_DEFAULT_COMMAND='
       sed s/^..//) 2> /dev/null'
 
 export PATH="$HOME/.yarn/bin:$PATH"
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+

@@ -12,7 +12,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 
     command! -bang -nargs=* Rg
     \ call fzf#vim#grep(
-    \   'rg --column --line-number --no-heading --hidden --fixed-strings --follow --ignore-case -g "!guides/*" -g "!.git/*" -g "!log/*" -g "!*.bundle.*.js" -g "!vendor" --color=always '.shellescape(<q-args>), 1, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'))
+    \   'rg --column --line-number --no-heading --hidden --fixed-strings --follow --ignore-case -g "!guides/*" -g "!.git/*" -g "!log/*" -g "!*.bundle.*.js" -g "!vendor" -g "!static/*" --color=always '.shellescape(<q-args>), 1, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'))
 
     nnoremap <silent> <Leader>f :Rg<space>
   " }}}
@@ -94,9 +94,6 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 call plug#end()
 
-let g:python_host_prog = '/usr/local/bin/python2'
-let g:python3_host_prog = '/usr/local/bin/python3'
-
 " Save all files on loss of focus
 :au FocusLost * silent! wa
 
@@ -118,6 +115,11 @@ set textwidth=0         " Hard-wrap long lines as you type them.
 set expandtab           " Insert spaces when TAB is pressed.
 set tabstop=2           " Render TABs using this many spaces.
 set shiftwidth=2        " Indentation amount for < and > commands.
+
+" Python
+autocmd FileType python set sw=4
+autocmd FileType python set ts=4
+autocmd FileType python set sts=4
 
 " Soft line wrapping
 set wrap

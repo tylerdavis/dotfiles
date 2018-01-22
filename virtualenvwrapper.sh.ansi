@@ -1,0 +1,1358 @@
+[00;30m    1 [m[00;34m# -*- mode: shell-script -*-[m
+[00;30m    2 [m[00;34m#[m
+[00;30m    3 [m[00;34m# Shell functions to act as wrapper for Ian Bicking's virtualenv[m
+[00;30m    4 [m[00;34m# (http://pypi.python.org/pypi/virtualenv)[m
+[00;30m    5 [m[00;34m#[m
+[00;30m    6 [m[00;34m#[m
+[00;30m    7 [m[00;34m# Copyright Doug Hellmann, All Rights Reserved[m
+[00;30m    8 [m[00;34m#[m
+[00;30m    9 [m[00;34m# Permission to use, copy, modify, and distribute this software and its[m
+[00;30m   10 [m[00;34m# documentation for any purpose and without fee is hereby granted,[m
+[00;30m   11 [m[00;34m# provided that the above copyright notice appear in all copies and that[m
+[00;30m   12 [m[00;34m# both that copyright notice and this permission notice appear in[m
+[00;30m   13 [m[00;34m# supporting documentation, and that the name of Doug Hellmann not be used[m
+[00;30m   14 [m[00;34m# in advertising or publicity pertaining to distribution of the software[m
+[00;30m   15 [m[00;34m# without specific, written prior permission.[m
+[00;30m   16 [m[00;34m#[m
+[00;30m   17 [m[00;34m# DOUG HELLMANN DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,[m
+[00;30m   18 [m[00;34m# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO[m
+[00;30m   19 [m[00;34m# EVENT SHALL DOUG HELLMANN BE LIABLE FOR ANY SPECIAL, INDIRECT OR[m
+[00;30m   20 [m[00;34m# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF[m
+[00;30m   21 [m[00;34m# USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR[m
+[00;30m   22 [m[00;34m# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR[m
+[00;30m   23 [m[00;34m# PERFORMANCE OF THIS SOFTWARE.[m
+[00;30m   24 [m[00;34m#[m
+[00;30m   25 [m[00;34m#[m
+[00;30m   26 [m[00;34m# Project home page: http://www.doughellmann.com/projects/virtualenvwrapper/[m
+[00;30m   27 [m[00;34m#[m
+[00;30m   28 [m[00;34m#[m
+[00;30m   29 [m[00;34m# Setup:[m
+[00;30m   30 [m[00;34m#[m
+[00;30m   31 [m[00;34m#  1. Create a directory to hold the virtual environments.[m
+[00;30m   32 [m[00;34m#     (mkdir $HOME/.virtualenvs).[m
+[00;30m   33 [m[00;34m#  2. Add a line like "export WORKON_HOME=$HOME/.virtualenvs"[m
+[00;30m   34 [m[00;34m#     to your .bashrc.[m
+[00;30m   35 [m[00;34m#  3. Add a line like "source /path/to/this/file/virtualenvwrapper.sh"[m
+[00;30m   36 [m[00;34m#     to your .bashrc.[m
+[00;30m   37 [m[00;34m#  4. Run: source ~/.bashrc[m
+[00;30m   38 [m[00;34m#  5. Run: workon[m
+[00;30m   39 [m[00;34m#  6. A list of environments, empty, is printed.[m
+[00;30m   40 [m[00;34m#  7. Run: mkvirtualenv temp[m
+[00;30m   41 [m[00;34m#  8. Run: workon[m
+[00;30m   42 [m[00;34m#  9. This time, the "temp" environment is included.[m
+[00;30m   43 [m[00;34m# 10. Run: workon temp[m
+[00;30m   44 [m[00;34m# 11. The virtual environment is activated.[m
+[00;30m   45 [m[00;34m#[m
+[00;30m   46 [m
+[00;30m   47 [m[00;34m# Locate the global Python where virtualenvwrapper is installed.[m
+[00;30m   48 [m[00;33mif[m [00;00m[[m [00;31m"[m[00;35m${VIRTUALENVWRAPPER_PYTHON:-}[m[00;31m"[m [00;00m=[m [00;31m""[m [00;00m][m
+[00;30m   49 [m[00;33mthen[m
+[00;30m   50 [m    VIRTUALENVWRAPPER_PYTHON[00;00m=[m[00;31m"$(command \which python)"[m
+[00;30m   51 [m[00;33mfi[m
+[00;30m   52 [m
+[00;30m   53 [m[00;34m# Set the name of the virtualenv app to use.[m
+[00;30m   54 [m[00;33mif[m [00;00m[[m [00;31m"[m[00;35m${VIRTUALENVWRAPPER_VIRTUALENV:-}[m[00;31m"[m [00;00m=[m [00;31m""[m [00;00m][m
+[00;30m   55 [m[00;33mthen[m
+[00;30m   56 [m    VIRTUALENVWRAPPER_VIRTUALENV[00;00m=[m[00;31m"virtualenv"[m
+[00;30m   57 [m[00;33mfi[m
+[00;30m   58 [m
+[00;30m   59 [m[00;34m# Set the name of the virtualenv-clone app to use.[m
+[00;30m   60 [m[00;33mif[m [00;00m[[m [00;31m"[m[00;35m${VIRTUALENVWRAPPER_VIRTUALENV_CLONE:-}[m[00;31m"[m [00;00m=[m [00;31m""[m [00;00m][m
+[00;30m   61 [m[00;33mthen[m
+[00;30m   62 [m    VIRTUALENVWRAPPER_VIRTUALENV_CLONE[00;00m=[m[00;31m"virtualenv-clone"[m
+[00;30m   63 [m[00;33mfi[m
+[00;30m   64 [m
+[00;30m   65 [m[00;34m# Define script folder depending on the platorm (Win32/Unix)[m
+[00;30m   66 [mVIRTUALENVWRAPPER_ENV_BIN_DIR[00;00m=[m[00;31m"bin"[m
+[00;30m   67 [m[00;33mif[m [00;00m[[m [00;31m"[m[00;35m${OS:-}" = "Windows_NT" ] && ([ "${MSYSTEM:-}" = "MINGW32" ] || [ "${MSYSTEM:-}[m[00;31m"[m [00;00m=[m [00;31m"MINGW64"[m [00;00m])[m
+[00;30m   68 [m[00;33mthen[m
+[00;30m   69 [m    [00;34m# Only assign this for msys, cygwin use standard Unix paths[m
+[00;30m   70 [m    [00;34m# and its own python installation[m
+[00;30m   71 [m    VIRTUALENVWRAPPER_ENV_BIN_DIR[00;00m=[m[00;31m"Scripts"[m
+[00;30m   72 [m[00;33mfi[m
+[00;30m   73 [m
+[00;30m   74 [m[00;34m# Let the user override the name of the file that holds the project[m
+[00;30m   75 [m[00;34m# directory name.[m
+[00;30m   76 [m[00;33mif[m [00;00m[[m [00;31m"[m[00;35m${VIRTUALENVWRAPPER_PROJECT_FILENAME:-}[m[00;31m"[m [00;00m=[m [00;31m""[m [00;00m][m
+[00;30m   77 [m[00;33mthen[m
+[00;30m   78 [m    [00;32mexport[m VIRTUALENVWRAPPER_PROJECT_FILENAME[00;00m=[m[00;31m".project"[m
+[00;30m   79 [m[00;33mfi[m
+[00;30m   80 [m
+[00;30m   81 [m[00;34m# Let the user tell us they never want to cd to projects[m
+[00;30m   82 [m[00;34m# automatically.[m
+[00;30m   83 [m[00;32mexport[m VIRTUALENVWRAPPER_WORKON_CD[00;00m=[m[00;32m${VIRTUALENVWRAPPER_WORKON_CD:-1}[m
+[00;30m   84 [m
+[00;30m   85 [m[00;34m# Remember where we are running from.[m
+[00;30m   86 [m[00;33mif[m [00;00m[[m [00;32m-z[m [00;31m"[m[00;35m${VIRTUALENVWRAPPER_SCRIPT:-}[m[00;31m"[m [00;00m][m
+[00;30m   87 [m[00;33mthen[m
+[00;30m   88 [m    [00;33mif[m [00;00m[[m [00;32m-n[m [00;31m"[m[00;35m$BASH[m[00;31m"[m [00;00m][m
+[00;30m   89 [m    [00;33mthen[m
+[00;30m   90 [m        [00;32mexport[m VIRTUALENVWRAPPER_SCRIPT[00;00m=[m[00;31m"[m[00;35m$BASH_SOURCE[m[00;31m"[m
+[00;30m   91 [m    [00;33melif[m [00;00m[[m [00;32m-n[m [00;31m"[m[00;35m$ZSH_VERSION[m[00;31m"[m [00;00m][m
+[00;30m   92 [m    [00;33mthen[m
+[00;30m   93 [m        [00;32mexport[m VIRTUALENVWRAPPER_SCRIPT[00;00m=[m[00;31m"[m[00;35m$0[m[00;31m"[m
+[00;30m   94 [m    [00;33melse[m
+[00;30m   95 [m        [00;32mexport[m VIRTUALENVWRAPPER_SCRIPT[00;00m=[m[00;31m"[m[00;35m${.sh.file}[m[00;31m"[m
+[00;30m   96 [m    [00;33mfi[m
+[00;30m   97 [m[00;33mfi[m
+[00;30m   98 [m
+[00;30m   99 [m[00;34m# Portable shell scripting is hard, let's go shopping.[m
+[00;30m  100 [m[00;34m#[m
+[00;30m  101 [m[00;34m# People insist on aliasing commands like 'cd', either with a real[m
+[00;30m  102 [m[00;34m# alias or even a shell function. Under bash and zsh, "builtin" forces[m
+[00;30m  103 [m[00;34m# the use of a command that is part of the shell itself instead of an[m
+[00;30m  104 [m[00;34m# alias, function, or external command, while "command" does something[m
+[00;30m  105 [m[00;34m# similar but allows external commands. Under ksh "builtin" registers[m
+[00;30m  106 [m[00;34m# a new command from a shared library, but "command" will pick up[m
+[00;30m  107 [m[00;34m# existing builtin commands. We need to use a builtin for cd because[m
+[00;30m  108 [m[00;34m# we are trying to change the state of the current shell, so we use[m
+[00;30m  109 [m[00;34m# "builtin" for bash and zsh but "command" under ksh.[m
+[00;30m  110 [m[00;33mfunction[m virtualenvwrapper_cd [00;00m{[m
+[00;30m  111 [m    [00;33mif[m [00;00m[[m [00;32m-n[m [00;31m"[m[00;35m${BASH:-}[m[00;31m"[m [00;00m][m
+[00;30m  112 [m    [00;33mthen[m
+[00;30m  113 [m        [00;32mbuiltin[m \[00;32mcd[m [00;31m"$@"[m
+[00;30m  114 [m    [00;33melif[m [00;00m[[m [00;32m-n[m [00;31m"[m[00;35m${ZSH_VERSION:-}[m[00;31m"[m [00;00m][m
+[00;30m  115 [m    [00;33mthen[m
+[00;30m  116 [m        [00;32mbuiltin[m \[00;32mcd -q[m [00;31m"$@"[m
+[00;30m  117 [m    [00;33melse[m
+[00;30m  118 [m        [00;32mcommand[m \[00;32mcd[m [00;31m"$@"[m
+[00;30m  119 [m    [00;33mfi[m
+[00;30m  120 [m[00;00m}[m
+[00;30m  121 [m
+[00;30m  122 [m[00;33mfunction[m virtualenvwrapper_expandpath [00;00m{[m
+[00;30m  123 [m    [00;33mif[m [00;00m[[m [00;31m"[m[00;35m$1[m[00;31m"[m [00;00m=[m [00;31m""[m [00;00m];[m [00;33mthen[m
+[00;30m  124 [m        [00;32mreturn[m [00;34m1[m
+[00;30m  125 [m    [00;33melse[m
+[00;30m  126 [m        [00;31m"[m[00;35m$VIRTUALENVWRAPPER_PYTHON[m[00;31m"[m [00;32m-c[m [00;31m"import os,sys; sys.stdout.write(os.path.normpath(os.path.expanduser(os.path.expandvars([m[00;35m\"[m[00;31m[m[00;35m$1[m[00;31m[m[00;35m\"[m[00;31m)))+'[m[00;35m\n[m[00;31m')"[m
+[00;30m  127 [m        [00;32mreturn[m [00;34m0[m
+[00;30m  128 [m    [00;33mfi[m
+[00;30m  129 [m[00;00m}[m
+[00;30m  130 [m
+[00;30m  131 [m[00;33mfunction[m virtualenvwrapper_absolutepath [00;00m{[m
+[00;30m  132 [m    [00;33mif[m [00;00m[[m [00;31m"[m[00;35m$1[m[00;31m"[m [00;00m=[m [00;31m""[m [00;00m];[m [00;33mthen[m
+[00;30m  133 [m        [00;32mreturn[m [00;34m1[m
+[00;30m  134 [m    [00;33melse[m
+[00;30m  135 [m        [00;31m"[m[00;35m$VIRTUALENVWRAPPER_PYTHON[m[00;31m"[m [00;32m-c[m [00;31m"import os,sys; sys.stdout.write(os.path.abspath([m[00;35m\"[m[00;31m[m[00;35m$1[m[00;31m[m[00;35m\"[m[00;31m)+'[m[00;35m\n[m[00;31m')"[m
+[00;30m  136 [m        [00;32mreturn[m [00;34m0[m
+[00;30m  137 [m    [00;33mfi[m
+[00;30m  138 [m[00;00m}[m
+[00;30m  139 [m
+[00;30m  140 [m[00;33mfunction[m virtualenvwrapper_derive_workon_home [00;00m{[m
+[00;30m  141 [m    typeset workon_home_dir[00;00m=[m[00;31m"[m[00;35m$WORKON_HOME[m[00;31m"[m
+[00;30m  142 [m
+[00;30m  143 [m    [00;34m# Make sure there is a default value for WORKON_HOME.[m
+[00;30m  144 [m    [00;34m# You can override this setting in your .bashrc.[m
+[00;30m  145 [m    [00;33mif[m [00;00m[[m [00;31m"[m[00;35m$workon_home_dir[m[00;31m"[m [00;00m=[m [00;31m""[m [00;00m][m
+[00;30m  146 [m    [00;33mthen[m
+[00;30m  147 [m        workon_home_dir[00;00m=[m[00;31m"[m[00;35m$HOME[m[00;31m/.virtualenvs"[m
+[00;30m  148 [m    [00;33mfi[m
+[00;30m  149 [m
+[00;30m  150 [m    [00;34m# If the path is relative, prefix it with $HOME[m
+[00;30m  151 [m    [00;34m# (note: for compatibility)[m
+[00;30m  152 [m    [00;33mif[m [00;32mecho[m [00;31m"[m[00;35m$workon_home_dir[m[00;31m"[m | [00;00m([m[00;32munset[m GREP_OPTIONS[00;00m;[m [00;32mcommand[m \[00;32mgrep[m [00;31m'^[^/~]'[m [00;00m> /[mdev[00;00m/[mnull[00;00m)[m
+[00;30m  153 [m    [00;33mthen[m
+[00;30m  154 [m        workon_home_dir[00;00m=[m[00;31m"[m[00;35m$HOME[m[00;31m/[m[00;35m$WORKON_HOME[m[00;31m"[m
+[00;30m  155 [m    [00;33mfi[m
+[00;30m  156 [m
+[00;30m  157 [m    [00;34m# Only call on Python to fix the path if it looks like the[m
+[00;30m  158 [m    [00;34m# path might contain stuff to expand.[m
+[00;30m  159 [m    [00;34m# (it might be possible to do this in shell, but I don't know a[m
+[00;30m  160 [m    [00;34m# cross-shell-safe way of doing it -wolever)[m
+[00;30m  161 [m    [00;33mif[m [00;32mecho[m [00;31m"[m[00;35m$workon_home_dir[m[00;31m"[m | [00;00m([m[00;32munset[m GREP_OPTIONS[00;00m;[m [00;32mcommand[m \[00;32megrep[m [00;31m'([\$~]|//)'[m [00;00m>/[mdev[00;00m/[mnull[00;00m)[m
+[00;30m  162 [m    [00;33mthen[m
+[00;30m  163 [m        [00;34m# This will normalize the path by:[m
+[00;30m  164 [m        [00;34m# - Removing extra slashes (e.g., when TMPDIR ends in a slash)[m
+[00;30m  165 [m        [00;34m# - Expanding variables (e.g., $foo)[m
+[00;30m  166 [m        [00;34m# - Converting ~s to complete paths (e.g., ~/ to /home/brian/ and ~arthur to /home/arthur)[m
+[00;30m  167 [m        workon_home_dir[00;00m=[m[00;31m"$(virtualenvwrapper_expandpath "[m[00;32m$workon_home_dir[m[00;31m")"[m
+[00;30m  168 [m    [00;33mfi[m
+[00;30m  169 [m
+[00;30m  170 [m    [00;32mecho[m [00;31m"[m[00;35m$workon_home_dir[m[00;31m"[m
+[00;30m  171 [m    [00;32mreturn[m [00;34m0[m
+[00;30m  172 [m[00;00m}[m
+[00;30m  173 [m
+[00;30m  174 [m[00;34m# Check if the WORKON_HOME directory exists,[m
+[00;30m  175 [m[00;34m# create it if it does not[m
+[00;30m  176 [m[00;34m# seperate from creating the files in it because this used to just error[m
+[00;30m  177 [m[00;34m# and maybe other things rely on the dir existing before that happens.[m
+[00;30m  178 [m[00;33mfunction[m virtualenvwrapper_verify_workon_home [00;00m{[m
+[00;30m  179 [m    RC[00;00m=[m[00;34m0[m
+[00;30m  180 [m    [00;33mif[m [00;00m[ ![m [00;32m-d[m [00;31m"[m[00;35m$WORKON_HOME[m[00;31m/"[m [00;00m][m
+[00;30m  181 [m    [00;33mthen[m
+[00;30m  182 [m        [00;33mif[m [00;00m[[m [00;31m"[m[00;35m$1[m[00;31m"[m [00;00m!=[m [00;31m"-q"[m [00;00m][m
+[00;30m  183 [m        [00;33mthen[m
+[00;30m  184 [m            [00;32mecho[m [00;31m"NOTE: Virtual environments directory[m [00;35m$WORKON_HOME[m [00;31mdoes not exist. Creating..."[m [00;34m1[m[00;00m>&[m[00;34m2[m
+[00;30m  185 [m        [00;33mfi[m
+[00;30m  186 [m        mkdir [00;32m-p[m [00;31m"[m[00;35m$WORKON_HOME[m[00;31m"[m
+[00;30m  187 [m        RC[00;00m=[m$?
+[00;30m  188 [m    [00;33mfi[m
+[00;30m  189 [m    [00;32mreturn[m [00;32m$RC[m
+[00;30m  190 [m[00;00m}[m
+[00;30m  191 [m
+[00;30m  192 [m[00;34m#HOOK_VERBOSE_OPTION="-q"[m
+[00;30m  193 [m
+[00;30m  194 [m[00;34m# Function to wrap mktemp so tests can replace it for error condition[m
+[00;30m  195 [m[00;34m# testing.[m
+[00;30m  196 [m[00;33mfunction[m virtualenvwrapper_mktemp [00;00m{[m
+[00;30m  197 [m    [00;32mcommand[m \mktemp [00;31m"$@"[m
+[00;30m  198 [m[00;00m}[m
+[00;30m  199 [m
+[00;30m  200 [m[00;34m# Expects 1 argument, the suffix for the new file.[m
+[00;30m  201 [m[00;33mfunction[m virtualenvwrapper_tempfile [00;00m{[m
+[00;30m  202 [m    [00;34m# Note: the 'X's must come last[m
+[00;30m  203 [m    typeset suffix[00;00m=[m[00;32m${1:-hook}[m
+[00;30m  204 [m    typeset [00;32mfile[m
+[00;30m  205 [m
+[00;30m  206 [m    [00;32mfile[m[00;00m=[m[00;31m"$(virtualenvwrapper_mktemp -t virtualenvwrapper-[m[00;35m$suffix[m[00;31m-XXXXXXXXXX)"[m
+[00;30m  207 [m    [00;32mtouch[m [00;31m"[m[00;35m$file[m[00;31m"[m
+[00;30m  208 [m    [00;33mif[m [00;00m[[m $? [00;32m-ne[m [00;34m0[m [00;00m][m || [00;00m[[m [00;32m-z[m [00;31m"[m[00;35m$file[m[00;31m"[m [00;00m][m || [00;00m[ ![m [00;32m-f[m [00;31m"[m[00;35m$file[m[00;31m"[m [00;00m][m
+[00;30m  209 [m    [00;33mthen[m
+[00;30m  210 [m        [00;32mecho[m [00;31m"ERROR: virtualenvwrapper could not create a temporary file name."[m [00;34m1[m[00;00m>&[m[00;34m2[m
+[00;30m  211 [m        [00;32mreturn[m [00;34m1[m
+[00;30m  212 [m    [00;33mfi[m
+[00;30m  213 [m    [00;32mecho[m [00;32m$file[m
+[00;30m  214 [m    [00;32mreturn[m [00;34m0[m
+[00;30m  215 [m[00;00m}[m
+[00;30m  216 [m
+[00;30m  217 [m[00;34m# Run the hooks[m
+[00;30m  218 [m[00;33mfunction[m virtualenvwrapper_run_hook [00;00m{[m
+[00;30m  219 [m    typeset hook_script
+[00;30m  220 [m    typeset result
+[00;30m  221 [m
+[00;30m  222 [m    hook_script[00;00m=[m[00;31m"$(virtualenvwrapper_tempfile[m [00;35m${1}[m[00;31m-hook)"[m || [00;32mreturn[m [00;34m1[m
+[00;30m  223 [m
+[00;30m  224 [m    [00;34m# Use a subshell to run the python interpreter with hook_loader so[m
+[00;30m  225 [m    [00;34m# we can change the working directory. This avoids having the[m
+[00;30m  226 [m    [00;34m# Python 3 interpreter decide that its "prefix" is the virtualenv[m
+[00;30m  227 [m    [00;34m# if we happen to be inside the virtualenv when we start.[m
+[00;30m  228 [m    [00;00m([m \
+[00;30m  229 [m        virtualenvwrapper_cd [00;31m"[m[00;35m$WORKON_HOME[m[00;31m"[m [00;00m&&[m
+[00;30m  230 [m        [00;31m"[m[00;35m$VIRTUALENVWRAPPER_PYTHON[m[00;31m"[m [00;32m-m[m [00;31m'virtualenvwrapper.hook_loader'[m \
+[00;30m  231 [m            [00;32m${HOOK_VERBOSE_OPTION:-}[m [00;32m--script[m [00;31m"[m[00;35m$hook_script[m[00;31m"[m [00;31m"$@"[m \
+[00;30m  232 [m    [00;00m)[m
+[00;30m  233 [m    result[00;00m=[m$?
+[00;30m  234 [m
+[00;30m  235 [m    [00;33mif[m [00;00m[[m [00;32m$result[m [00;32m-eq[m [00;34m0[m [00;00m][m
+[00;30m  236 [m    [00;33mthen[m
+[00;30m  237 [m        [00;33mif[m [00;00m[ ![m [00;32m-f[m [00;31m"[m[00;35m$hook_script[m[00;31m"[m [00;00m][m
+[00;30m  238 [m        [00;33mthen[m
+[00;30m  239 [m            [00;32mecho[m [00;31m"ERROR: virtualenvwrapper_run_hook could not find temporary file[m [00;35m$hook_script[m[00;31m"[m [00;34m1[m[00;00m>&[m[00;34m2[m
+[00;30m  240 [m            [00;32mcommand[m [00;35m\r[mm [00;32m-f[m [00;31m"[m[00;35m$hook_script[m[00;31m"[m
+[00;30m  241 [m            [00;32mreturn[m [00;34m2[m
+[00;30m  242 [m        [00;33mfi[m
+[00;30m  243 [m        [00;34m# cat "$hook_script"[m
+[00;30m  244 [m        [00;32msource[m [00;31m"[m[00;35m$hook_script[m[00;31m"[m
+[00;30m  245 [m    [00;33melif[m [00;00m[[m [00;31m"[m[00;35m${1}[m[00;31m"[m [00;00m=[m [00;31m"initialize"[m [00;00m][m
+[00;30m  246 [m    [00;33mthen[m
+[00;30m  247 [m        [00;32mcat[m [00;00m-[m [00;34m1[m[00;00m>&[m[00;34m2[m [00;31m<<EOF[m
+[00;30m  248 [m[00;31mvirtualenvwrapper.sh: There was a problem running the initialization hooks.[m
+[00;30m  249 [m[00;31m[m
+[00;30m  250 [m[00;31mIf Python could not import the module virtualenvwrapper.hook_loader,[m
+[00;30m  251 [m[00;31mcheck that virtualenvwrapper has been installed for[m
+[00;30m  252 [m[00;31mVIRTUALENVWRAPPER_PYTHON=[m[00;35m$VIRTUALENVWRAPPER_PYTHON[m [00;31mand that PATH is[m
+[00;30m  253 [m[00;31mset properly.[m
+[00;30m  254 [m[00;31mEOF[m
+[00;30m  255 [m    [00;33mfi[m
+[00;30m  256 [m    [00;32mcommand[m [00;35m\r[mm [00;32m-f[m [00;31m"[m[00;35m$hook_script[m[00;31m"[m
+[00;30m  257 [m    [00;32mreturn[m [00;32m$result[m
+[00;30m  258 [m[00;00m}[m
+[00;30m  259 [m
+[00;30m  260 [m[00;34m# Set up tab completion.  (Adapted from Arthur Koziel's version at[m
+[00;30m  261 [m[00;34m# http://arthurkoziel.com/2008/10/11/virtualenvwrapper-bash-completion/)[m
+[00;30m  262 [m[00;33mfunction[m virtualenvwrapper_setup_tab_completion [00;00m{[m
+[00;30m  263 [m    [00;33mif[m [00;00m[[m [00;32m-n[m [00;31m"[m[00;35m${BASH:-}[m[00;31m"[m [00;00m] ;[m [00;33mthen[m
+[00;30m  264 [m        _virtualenvs [00;00m() {[m
+[00;30m  265 [m            [00;32mlocal[m cur[00;00m=[m[00;31m"[m[00;35m${COMP_WORDS[COMP_CWORD]}[m[00;31m"[m
+[00;30m  266 [m            COMPREPLY[00;00m=([m $[00;00m([mcompgen [00;32m-W[m [00;31m"`virtualenvwrapper_show_workon_options`"[m [00;32m--[m [00;32m${cur}[m[00;00m) )[m
+[00;30m  267 [m        [00;00m}[m
+[00;30m  268 [m        _cdvirtualenv_complete [00;00m() {[m
+[00;30m  269 [m            [00;32mlocal[m cur[00;00m=[m[00;31m"[m[00;35m$2[m[00;31m"[m
+[00;30m  270 [m            COMPREPLY[00;00m=([m $[00;00m([mcdvirtualenv [00;00m&&[m compgen [00;32m-d --[m [00;31m"[m[00;35m${cur}[m[00;31m"[m [00;00m) )[m
+[00;30m  271 [m        [00;00m}[m
+[00;30m  272 [m        _cdsitepackages_complete [00;00m() {[m
+[00;30m  273 [m            [00;32mlocal[m cur[00;00m=[m[00;31m"[m[00;35m$2[m[00;31m"[m
+[00;30m  274 [m            COMPREPLY[00;00m=([m $[00;00m([mcdsitepackages [00;00m&&[m compgen [00;32m-d --[m [00;31m"[m[00;35m${cur}[m[00;31m"[m [00;00m) )[m
+[00;30m  275 [m        [00;00m}[m
+[00;30m  276 [m        complete [00;32m-o[m nospace [00;32m-F[m _cdvirtualenv_complete [00;32m-S[m[00;00m/[m cdvirtualenv
+[00;30m  277 [m        complete [00;32m-o[m nospace [00;32m-F[m _cdsitepackages_complete [00;32m-S[m[00;00m/[m cdsitepackages
+[00;30m  278 [m        complete [00;32m-o[m default [00;32m-o[m nospace [00;32m-F[m _virtualenvs workon
+[00;30m  279 [m        complete [00;32m-o[m default [00;32m-o[m nospace [00;32m-F[m _virtualenvs rmvirtualenv
+[00;30m  280 [m        complete [00;32m-o[m default [00;32m-o[m nospace [00;32m-F[m _virtualenvs cpvirtualenv
+[00;30m  281 [m        complete [00;32m-o[m default [00;32m-o[m nospace [00;32m-F[m _virtualenvs showvirtualenv
+[00;30m  282 [m    [00;33melif[m [00;00m[[m [00;32m-n[m [00;31m"[m[00;35m$ZSH_VERSION[m[00;31m"[m [00;00m] ;[m [00;33mthen[m
+[00;30m  283 [m        _virtualenvs [00;00m() {[m
+[00;30m  284 [m            reply[00;00m=([m $[00;00m([mvirtualenvwrapper_show_workon_options[00;00m) )[m
+[00;30m  285 [m        [00;00m}[m
+[00;30m  286 [m        _cdvirtualenv_complete [00;00m() {[m
+[00;30m  287 [m            reply[00;00m=([m $[00;00m([mcdvirtualenv [00;00m&&[m [00;32mls[m [00;32m-d[m [00;32m${1}[m[00;00m*) )[m
+[00;30m  288 [m        [00;00m}[m
+[00;30m  289 [m        _cdsitepackages_complete [00;00m() {[m
+[00;30m  290 [m            reply[00;00m=([m $[00;00m([mcdsitepackages [00;00m&&[m [00;32mls[m [00;32m-d[m [00;32m${1}[m[00;00m*) )[m
+[00;30m  291 [m        [00;00m}[m
+[00;30m  292 [m        compctl [00;32m-K[m _virtualenvs workon rmvirtualenv cpvirtualenv showvirtualenv
+[00;30m  293 [m        compctl [00;32m-K[m _cdvirtualenv_complete cdvirtualenv
+[00;30m  294 [m        compctl [00;32m-K[m _cdsitepackages_complete cdsitepackages
+[00;30m  295 [m    [00;33mfi[m
+[00;30m  296 [m[00;00m}[m
+[00;30m  297 [m
+[00;30m  298 [m[00;34m# Set up virtualenvwrapper properly[m
+[00;30m  299 [m[00;33mfunction[m virtualenvwrapper_initialize [00;00m{[m
+[00;30m  300 [m    [00;32mexport[m WORKON_HOME[00;00m=[m[00;31m"$(virtualenvwrapper_derive_workon_home)"[m
+[00;30m  301 [m
+[00;30m  302 [m    virtualenvwrapper_verify_workon_home [00;32m-q[m || [00;32mreturn[m [00;34m1[m
+[00;30m  303 [m
+[00;30m  304 [m    [00;34m# Set the location of the hook scripts[m
+[00;30m  305 [m    [00;33mif[m [00;00m[[m [00;31m"[m[00;35m$VIRTUALENVWRAPPER_HOOK_DIR[m[00;31m"[m [00;00m=[m [00;31m""[m [00;00m][m
+[00;30m  306 [m    [00;33mthen[m
+[00;30m  307 [m        VIRTUALENVWRAPPER_HOOK_DIR[00;00m=[m[00;31m"[m[00;35m$WORKON_HOME[m[00;31m"[m
+[00;30m  308 [m    [00;33mfi[m
+[00;30m  309 [m    [00;32mexport[m VIRTUALENVWRAPPER_HOOK_DIR
+[00;30m  310 [m
+[00;30m  311 [m    mkdir [00;32m-p[m [00;31m"[m[00;35m$VIRTUALENVWRAPPER_HOOK_DIR[m[00;31m"[m
+[00;30m  312 [m
+[00;30m  313 [m    virtualenvwrapper_run_hook [00;31m"initialize"[m
+[00;30m  314 [m
+[00;30m  315 [m    virtualenvwrapper_setup_tab_completion
+[00;30m  316 [m
+[00;30m  317 [m    [00;32mreturn[m [00;34m0[m
+[00;30m  318 [m[00;00m}[m
+[00;30m  319 [m
+[00;30m  320 [m[00;34m# Verify that the passed resource is in path and exists[m
+[00;30m  321 [m[00;33mfunction[m virtualenvwrapper_verify_resource [00;00m{[m
+[00;30m  322 [m    typeset exe_path[00;00m=[m[00;31m"$(command \which "[m[00;32m$1[m[00;31m" | (unset GREP_OPTIONS; command \grep -v "[mnot found[00;31m"))"[m
+[00;30m  323 [m    [00;33mif[m [00;00m[[m [00;31m"[m[00;35m$exe_path[m[00;31m"[m [00;00m=[m [00;31m""[m [00;00m][m
+[00;30m  324 [m    [00;33mthen[m
+[00;30m  325 [m        [00;32mecho[m [00;31m"ERROR: virtualenvwrapper could not find[m [00;35m$1[m [00;31min your path"[m [00;00m>&[m[00;34m2[m
+[00;30m  326 [m        [00;32mreturn[m [00;34m1[m
+[00;30m  327 [m    [00;33mfi[m
+[00;30m  328 [m    [00;33mif[m [00;00m[ ![m [00;32m-e[m [00;31m"[m[00;35m$exe_path[m[00;31m"[m [00;00m][m
+[00;30m  329 [m    [00;33mthen[m
+[00;30m  330 [m        [00;32mecho[m [00;31m"ERROR: Found[m [00;35m$1[m [00;31min path as[m [00;35m\"[m[00;31m[m[00;35m$exe_path[m[00;31m[m[00;35m\"[m [00;31mbut that does not exist"[m [00;00m>&[m[00;34m2[m
+[00;30m  331 [m        [00;32mreturn[m [00;34m1[m
+[00;30m  332 [m    [00;33mfi[m
+[00;30m  333 [m    [00;32mreturn[m [00;34m0[m
+[00;30m  334 [m[00;00m}[m
+[00;30m  335 [m
+[00;30m  336 [m
+[00;30m  337 [m[00;34m# Verify that virtualenv is installed and visible[m
+[00;30m  338 [m[00;33mfunction[m virtualenvwrapper_verify_virtualenv [00;00m{[m
+[00;30m  339 [m    virtualenvwrapper_verify_resource [00;32m$VIRTUALENVWRAPPER_VIRTUALENV[m
+[00;30m  340 [m[00;00m}[m
+[00;30m  341 [m
+[00;30m  342 [m
+[00;30m  343 [m[00;33mfunction[m virtualenvwrapper_verify_virtualenv_clone [00;00m{[m
+[00;30m  344 [m    virtualenvwrapper_verify_resource [00;32m$VIRTUALENVWRAPPER_VIRTUALENV_CLONE[m
+[00;30m  345 [m[00;00m}[m
+[00;30m  346 [m
+[00;30m  347 [m
+[00;30m  348 [m[00;34m# Verify that the requested environment exists[m
+[00;30m  349 [m[00;33mfunction[m virtualenvwrapper_verify_workon_environment [00;00m{[m
+[00;30m  350 [m    typeset env_name[00;00m=[m[00;31m"[m[00;35m$1[m[00;31m"[m
+[00;30m  351 [m    [00;33mif[m [00;00m[ ![m [00;32m-d[m [00;31m"[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$env_name[m[00;31m"[m [00;00m][m
+[00;30m  352 [m    [00;33mthen[m
+[00;30m  353 [m       [00;32mecho[m [00;31m"ERROR: Environment '[m[00;35m$env_name[m[00;31m' does not exist. Create it with 'mkvirtualenv[m [00;35m$env_name[m[00;31m'."[m [00;00m>&[m[00;34m2[m
+[00;30m  354 [m       [00;32mreturn[m [00;34m1[m
+[00;30m  355 [m    [00;33mfi[m
+[00;30m  356 [m    [00;32mreturn[m [00;34m0[m
+[00;30m  357 [m[00;00m}[m
+[00;30m  358 [m
+[00;30m  359 [m[00;34m# Verify that the active environment exists[m
+[00;30m  360 [m[00;33mfunction[m virtualenvwrapper_verify_active_environment [00;00m{[m
+[00;30m  361 [m    [00;33mif[m [00;00m[ ![m [00;32m-n[m [00;31m"[m[00;35m${VIRTUAL_ENV}[m[00;31m"[m [00;00m][m || [00;00m[ ![m [00;32m-d[m [00;31m"[m[00;35m${VIRTUAL_ENV}[m[00;31m"[m [00;00m][m
+[00;30m  362 [m    [00;33mthen[m
+[00;30m  363 [m        [00;32mecho[m [00;31m"ERROR: no virtualenv active, or active virtualenv is missing"[m [00;00m>&[m[00;34m2[m
+[00;30m  364 [m        [00;32mreturn[m [00;34m1[m
+[00;30m  365 [m    [00;33mfi[m
+[00;30m  366 [m    [00;32mreturn[m [00;34m0[m
+[00;30m  367 [m[00;00m}[m
+[00;30m  368 [m
+[00;30m  369 [m[00;34m# Help text for mkvirtualenv[m
+[00;30m  370 [m[00;33mfunction[m virtualenvwrapper_mkvirtualenv_help [00;00m{[m
+[00;30m  371 [m    [00;32mecho[m [00;31m"Usage: mkvirtualenv [-a project_path] [-i package] [-r requirements_file] [virtualenv options] env_name"[m
+[00;30m  372 [m    [00;32mecho[m
+[00;30m  373 [m    [00;32mecho[m [00;31m" -a project_path"[m
+[00;30m  374 [m    [00;32mecho[m
+[00;30m  375 [m    [00;32mecho[m [00;31m"    Provide a full path to a project directory to associate with"[m
+[00;30m  376 [m    [00;32mecho[m [00;31m"    the new environment."[m
+[00;30m  377 [m    [00;32mecho[m
+[00;30m  378 [m    [00;32mecho[m [00;31m" -i package"[m
+[00;30m  379 [m    [00;32mecho[m
+[00;30m  380 [m    [00;32mecho[m [00;31m"    Install a package after the environment is created."[m
+[00;30m  381 [m    [00;32mecho[m [00;31m"    This option may be repeated."[m
+[00;30m  382 [m    [00;32mecho[m
+[00;30m  383 [m    [00;32mecho[m [00;31m" -r requirements_file"[m
+[00;30m  384 [m    [00;32mecho[m
+[00;30m  385 [m    [00;32mecho[m [00;31m"    Provide a pip requirements file to install a base set of packages"[m
+[00;30m  386 [m    [00;32mecho[m [00;31m"    into the new environment."[m
+[00;30m  387 [m    [00;32mecho[m[00;00m;[m
+[00;30m  388 [m    [00;32mecho[m [00;31m'virtualenv help:'[m[00;00m;[m
+[00;30m  389 [m    [00;32mecho[m[00;00m;[m
+[00;30m  390 [m    [00;31m"[m[00;35m$VIRTUALENVWRAPPER_VIRTUALENV[m[00;31m"[m $@[00;00m;[m
+[00;30m  391 [m[00;00m}[m
+[00;30m  392 [m
+[00;30m  393 [m[00;34m# Create a new environment, in the WORKON_HOME.[m
+[00;30m  394 [m[00;34m#[m
+[00;30m  395 [m[00;34m# Usage: mkvirtualenv [options] ENVNAME[m
+[00;30m  396 [m[00;34m# (where the options are passed directly to virtualenv)[m
+[00;30m  397 [m[00;34m#[m
+[00;30m  398 [m[00;34m#:help:mkvirtualenv: Create a new virtualenv in $WORKON_HOME[m
+[00;30m  399 [m[00;33mfunction[m mkvirtualenv [00;00m{[m
+[00;30m  400 [m    typeset [00;32m-a[m in_args
+[00;30m  401 [m    typeset [00;32m-a[m out_args
+[00;30m  402 [m    typeset [00;32m-i[m i
+[00;30m  403 [m    typeset tst
+[00;30m  404 [m    typeset a
+[00;30m  405 [m    typeset envname
+[00;30m  406 [m    typeset requirements
+[00;30m  407 [m    typeset packages
+[00;30m  408 [m    typeset interpreter
+[00;30m  409 [m    typeset project
+[00;30m  410 [m
+[00;30m  411 [m    in_args[00;00m=([m [00;31m"$@"[m [00;00m)[m
+[00;30m  412 [m
+[00;30m  413 [m    [00;33mif[m [00;00m[[m [00;32m-n[m [00;31m"[m[00;35m$ZSH_VERSION[m[00;31m"[m [00;00m][m
+[00;30m  414 [m    [00;33mthen[m
+[00;30m  415 [m        i[00;00m=[m[00;34m1[m
+[00;30m  416 [m        tst[00;00m=[m[00;31m"-le"[m
+[00;30m  417 [m    [00;33melse[m
+[00;30m  418 [m        i[00;00m=[m[00;34m0[m
+[00;30m  419 [m        tst[00;00m=[m[00;31m"-lt"[m
+[00;30m  420 [m    [00;33mfi[m
+[00;30m  421 [m    [00;33mwhile[m [00;00m[[m [00;32m$i $tst $#[m [00;00m][m
+[00;30m  422 [m    [00;33mdo[m
+[00;30m  423 [m        a[00;00m=[m[00;31m"[m[00;35m${in_args[$i]}[m[00;31m"[m
+[00;30m  424 [m        [00;34m# echo "arg $i : $a"[m
+[00;30m  425 [m        [00;33mcase[m [00;31m"[m[00;35m$a[m[00;31m"[m [00;33min[m
+[00;30m  426 [m            [00;32m-a[m[00;00m)[m
+[00;30m  427 [m                i[00;00m=[m$[00;00m(([m [00;32m$i[m [00;00m+[m [00;34m1[m [00;00m))[m
+[00;30m  428 [m                project[00;00m=[m[00;31m"[m[00;35m${in_args[$i]}[m[00;31m"[m
+[00;30m  429 [m                [00;33mif[m [00;00m[ ![m [00;32m-d[m [00;31m"[m[00;35m$project[m[00;31m"[m [00;00m][m
+[00;30m  430 [m                [00;33mthen[m
+[00;30m  431 [m                    [00;32mecho[m [00;31m"Cannot associate project with[m [00;35m$project[m[00;31m, it is not a directory"[m [00;34m1[m[00;00m>&[m[00;34m2[m
+[00;30m  432 [m                    [00;32mreturn[m [00;34m1[m
+[00;30m  433 [m                [00;33mfi[m
+[00;30m  434 [m                project[00;00m=[m[00;31m"$(virtualenvwrapper_absolutepath[m [00;35m${project}[m[00;31m)"[m[00;00m;;[m
+[00;30m  435 [m            [00;32m-h[m|[00;32m--help[m[00;00m)[m
+[00;30m  436 [m                virtualenvwrapper_mkvirtualenv_help [00;32m$a[m[00;00m;[m
+[00;30m  437 [m                [00;32mreturn[m[00;00m;;[m
+[00;30m  438 [m            [00;32m-i[m[00;00m)[m
+[00;30m  439 [m                i[00;00m=[m$[00;00m(([m [00;32m$i[m [00;00m+[m [00;34m1[m [00;00m));[m
+[00;30m  440 [m                packages[00;00m=[m[00;31m"[m[00;35m$packages[m [00;31m[m[00;35m${in_args[$i]}[m[00;31m"[m[00;00m;;[m
+[00;30m  441 [m            [00;32m-p[m|[00;32m--python[m[00;00m*)[m
+[00;30m  442 [m                [00;33mif[m [00;32mecho[m [00;31m"[m[00;35m$a[m[00;31m"[m | [00;32mgrep[m [00;32m-q[m [00;31m"="[m
+[00;30m  443 [m                [00;33mthen[m
+[00;30m  444 [m                    interpreter[00;00m=[m[00;31m"$(echo "[m[00;32m$a[m[00;31m" | cut -f2 -d=)"[m
+[00;30m  445 [m                [00;33melse[m
+[00;30m  446 [m                    i[00;00m=[m$[00;00m(([m [00;32m$i[m [00;00m+[m [00;34m1[m [00;00m))[m
+[00;30m  447 [m                    interpreter[00;00m=[m[00;31m"[m[00;35m${in_args[$i]}[m[00;31m"[m
+[00;30m  448 [m                [00;33mfi[m[00;00m;;[m
+[00;30m  449 [m            [00;32m-r[m[00;00m)[m
+[00;30m  450 [m                i[00;00m=[m$[00;00m(([m [00;32m$i[m [00;00m+[m [00;34m1[m [00;00m));[m
+[00;30m  451 [m                requirements[00;00m=[m[00;31m"[m[00;35m${in_args[$i]}[m[00;31m"[m[00;00m;[m
+[00;30m  452 [m                requirements[00;00m=[m[00;31m"$(virtualenvwrapper_expandpath "[m[00;32m$requirements[m[00;31m")"[m[00;00m;;[m
+[00;30m  453 [m            [00;00m*)[m
+[00;30m  454 [m                [00;33mif[m [00;00m[[m [00;32m${#out_args}[m [00;32m-gt[m [00;34m0[m [00;00m][m
+[00;30m  455 [m                [00;33mthen[m
+[00;30m  456 [m                    out_args[00;00m=([m [00;31m"[m[00;35m${out_args[@]-}[m[00;31m"[m [00;31m"[m[00;35m$a[m[00;31m"[m [00;00m)[m
+[00;30m  457 [m                [00;33melse[m
+[00;30m  458 [m                    out_args[00;00m=([m [00;31m"[m[00;35m$a[m[00;31m"[m [00;00m)[m
+[00;30m  459 [m                [00;33mfi[m[00;00m;;[m
+[00;30m  460 [m        [00;33mesac[m
+[00;30m  461 [m        i[00;00m=[m$[00;00m(([m [00;32m$i[m [00;00m+[m [00;34m1[m [00;00m))[m
+[00;30m  462 [m    [00;33mdone[m
+[00;30m  463 [m
+[00;30m  464 [m    [00;33mif[m [00;00m[ ![m [00;32m-z[m [00;32m$interpreter[m [00;00m][m
+[00;30m  465 [m    [00;33mthen[m
+[00;30m  466 [m        out_args[00;00m=([m [00;31m"--python=[m[00;35m$interpreter[m[00;31m"[m [00;32m${out_args[@]}[m [00;00m)[m
+[00;30m  467 [m    [00;33mfi[m[00;00m;[m
+[00;30m  468 [m
+[00;30m  469 [m    [00;32mset --[m [00;31m"[m[00;35m${out_args[@]}[m[00;31m"[m
+[00;30m  470 [m
+[00;30m  471 [m    [00;32meval[m [00;31m"envname=\$[m[00;35m$#[m[00;31m"[m
+[00;30m  472 [m    virtualenvwrapper_verify_workon_home || [00;32mreturn[m [00;34m1[m
+[00;30m  473 [m    virtualenvwrapper_verify_virtualenv || [00;32mreturn[m [00;34m1[m
+[00;30m  474 [m    [00;00m([m
+[00;30m  475 [m        [00;00m[[m [00;32m-n[m [00;31m"[m[00;35m$ZSH_VERSION[m[00;31m"[m [00;00m] &&[m setopt SH_WORD_SPLIT
+[00;30m  476 [m        virtualenvwrapper_cd [00;31m"[m[00;35m$WORKON_HOME[m[00;31m"[m [00;00m&&[m
+[00;30m  477 [m        [00;31m"[m[00;35m$VIRTUALENVWRAPPER_VIRTUALENV[m[00;31m"[m [00;32m$VIRTUALENVWRAPPER_VIRTUALENV_ARGS[m [00;31m"$@"[m [00;00m&&[m
+[00;30m  478 [m        [00;00m[[m [00;32m-d[m [00;31m"[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$envname[m[00;31m"[m [00;00m] &&[m \
+[00;30m  479 [m            virtualenvwrapper_run_hook [00;31m"pre_mkvirtualenv"[m [00;31m"[m[00;35m$envname[m[00;31m"[m
+[00;30m  480 [m    [00;00m)[m
+[00;30m  481 [m    typeset RC[00;00m=[m$?
+[00;30m  482 [m    [00;00m[[m [00;32m$RC[m [00;32m-ne[m [00;34m0[m [00;00m] &&[m [00;32mreturn[m [00;32m$RC[m
+[00;30m  483 [m
+[00;30m  484 [m    [00;34m# If they passed a help option or got an error from virtualenv,[m
+[00;30m  485 [m    [00;34m# the environment won't exist.  Use that to tell whether[m
+[00;30m  486 [m    [00;34m# we should switch to the environment and run the hook.[m
+[00;30m  487 [m    [00;00m[ ![m [00;32m-d[m [00;31m"[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$envname[m[00;31m"[m [00;00m] &&[m [00;32mreturn[m [00;34m0[m
+[00;30m  488 [m
+[00;30m  489 [m    [00;34m# If they gave us a project directory, set it up now[m
+[00;30m  490 [m    [00;34m# so the activate hooks can find it.[m
+[00;30m  491 [m    [00;33mif[m [00;00m[ ![m [00;32m-z[m [00;31m"[m[00;35m$project[m[00;31m"[m [00;00m][m
+[00;30m  492 [m    [00;33mthen[m
+[00;30m  493 [m        setvirtualenvproject [00;31m"[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$envname[m[00;31m"[m [00;31m"[m[00;35m$project[m[00;31m"[m
+[00;30m  494 [m        RC[00;00m=[m$?
+[00;30m  495 [m        [00;00m[[m [00;32m$RC[m [00;32m-ne[m [00;34m0[m [00;00m] &&[m [00;32mreturn[m [00;32m$RC[m
+[00;30m  496 [m    [00;33mfi[m
+[00;30m  497 [m
+[00;30m  498 [m    [00;34m# Now activate the new environment[m
+[00;30m  499 [m    workon [00;31m"[m[00;35m$envname[m[00;31m"[m
+[00;30m  500 [m
+[00;30m  501 [m    [00;33mif[m [00;00m[ ![m [00;32m-z[m [00;31m"[m[00;35m$requirements[m[00;31m"[m [00;00m][m
+[00;30m  502 [m    [00;33mthen[m
+[00;30m  503 [m        pip [00;32minstall[m [00;32m-r[m [00;31m"[m[00;35m$requirements[m[00;31m"[m
+[00;30m  504 [m    [00;33mfi[m
+[00;30m  505 [m
+[00;30m  506 [m    [00;33mfor[m a [00;33min[m [00;32m$packages[m
+[00;30m  507 [m    [00;33mdo[m
+[00;30m  508 [m        pip [00;32minstall[m [00;32m$a[m
+[00;30m  509 [m    [00;33mdone[m
+[00;30m  510 [m
+[00;30m  511 [m    virtualenvwrapper_run_hook [00;31m"post_mkvirtualenv"[m
+[00;30m  512 [m[00;00m}[m
+[00;30m  513 [m
+[00;30m  514 [m[00;34m#:help:rmvirtualenv: Remove a virtualenv[m
+[00;30m  515 [m[00;33mfunction[m rmvirtualenv [00;00m{[m
+[00;30m  516 [m    virtualenvwrapper_verify_workon_home || [00;32mreturn[m [00;34m1[m
+[00;30m  517 [m    [00;33mif[m [00;00m[[m [00;32m${#@}[m [00;00m=[m [00;34m0[m [00;00m][m
+[00;30m  518 [m    [00;33mthen[m
+[00;30m  519 [m        [00;32mecho[m [00;31m"Please specify an environment."[m [00;00m>&[m[00;34m2[m
+[00;30m  520 [m        [00;32mreturn[m [00;34m1[m
+[00;30m  521 [m    [00;33mfi[m
+[00;30m  522 [m
+[00;30m  523 [m    [00;34m# support to remove several environments[m
+[00;30m  524 [m    typeset env_name
+[00;30m  525 [m    [00;34m# Must quote the parameters, as environments could have spaces in their names[m
+[00;30m  526 [m    [00;33mfor[m env_name [00;33min[m [00;31m"$@"[m
+[00;30m  527 [m    [00;33mdo[m
+[00;30m  528 [m        [00;32mecho[m [00;31m"Removing[m [00;35m$env_name[m[00;31m..."[m
+[00;30m  529 [m        typeset env_dir[00;00m=[m[00;31m"[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$env_name[m[00;31m"[m
+[00;30m  530 [m        [00;33mif[m [00;00m[[m [00;31m"[m[00;35m$VIRTUAL_ENV[m[00;31m"[m [00;00m=[m [00;31m"[m[00;35m$env_dir[m[00;31m"[m [00;00m][m
+[00;30m  531 [m        [00;33mthen[m
+[00;30m  532 [m            [00;32mecho[m [00;31m"ERROR: You cannot remove the active environment ('[m[00;35m$env_name[m[00;31m')."[m [00;00m>&[m[00;34m2[m
+[00;30m  533 [m            [00;32mecho[m [00;31m"Either switch to another environment, or run 'deactivate'."[m [00;00m>&[m[00;34m2[m
+[00;30m  534 [m            [00;32mreturn[m [00;34m1[m
+[00;30m  535 [m        [00;33mfi[m
+[00;30m  536 [m
+[00;30m  537 [m        [00;33mif[m [00;00m[ ![m [00;32m-d[m [00;31m"[m[00;35m$env_dir[m[00;31m"[m [00;00m];[m [00;33mthen[m
+[00;30m  538 [m            [00;32mecho[m [00;31m"Did not find environment[m [00;35m$env_dir[m [00;31mto remove."[m [00;00m>&[m[00;34m2[m
+[00;30m  539 [m        [00;33mfi[m
+[00;30m  540 [m
+[00;30m  541 [m        [00;34m# Move out of the current directory to one known to be[m
+[00;30m  542 [m        [00;34m# safe, in case we are inside the environment somewhere.[m
+[00;30m  543 [m        typeset prior_dir[00;00m=[m[00;31m"$(pwd)"[m
+[00;30m  544 [m        virtualenvwrapper_cd [00;31m"[m[00;35m$WORKON_HOME[m[00;31m"[m
+[00;30m  545 [m
+[00;30m  546 [m        virtualenvwrapper_run_hook [00;31m"pre_rmvirtualenv"[m [00;31m"[m[00;35m$env_name[m[00;31m"[m
+[00;30m  547 [m        [00;32mcommand[m [00;35m\r[mm [00;32m-rf[m [00;31m"[m[00;35m$env_dir[m[00;31m"[m
+[00;30m  548 [m        virtualenvwrapper_run_hook [00;31m"post_rmvirtualenv"[m [00;31m"[m[00;35m$env_name[m[00;31m"[m
+[00;30m  549 [m
+[00;30m  550 [m        [00;34m# If the directory we used to be in still exists, move back to it.[m
+[00;30m  551 [m        [00;33mif[m [00;00m[[m [00;32m-d[m [00;31m"[m[00;35m$prior_dir[m[00;31m"[m [00;00m][m
+[00;30m  552 [m        [00;33mthen[m
+[00;30m  553 [m            virtualenvwrapper_cd [00;31m"[m[00;35m$prior_dir[m[00;31m"[m
+[00;30m  554 [m        [00;33mfi[m
+[00;30m  555 [m    [00;33mdone[m
+[00;30m  556 [m[00;00m}[m
+[00;30m  557 [m
+[00;30m  558 [m[00;34m# List the available environments.[m
+[00;30m  559 [m[00;33mfunction[m virtualenvwrapper_show_workon_options [00;00m{[m
+[00;30m  560 [m    virtualenvwrapper_verify_workon_home || [00;32mreturn[m [00;34m1[m
+[00;30m  561 [m    [00;34m# NOTE: DO NOT use ls or cd here because colorized versions spew control[m
+[00;30m  562 [m    [00;34m#       characters into the output list.[m
+[00;30m  563 [m    [00;34m# echo seems a little faster than find, even with -depth 3.[m
+[00;30m  564 [m    [00;34m# Note that this is a little tricky, as there may be spaces in the path.[m
+[00;30m  565 [m    [00;34m#[m
+[00;30m  566 [m    [00;34m# 1. Look for environments by finding the activate scripts.[m
+[00;30m  567 [m    [00;34m#    Use a subshell so we can suppress the message printed[m
+[00;30m  568 [m    [00;34m#    by zsh if the glob pattern fails to match any files.[m
+[00;30m  569 [m    [00;34m#    This yields a single, space-separated line containing all matches.[m
+[00;30m  570 [m    [00;34m# 2. Replace the trailing newline with a space, so every[m
+[00;30m  571 [m    [00;34m#    possible env has a space following it.[m
+[00;30m  572 [m    [00;34m# 3. Strip the bindir/activate script suffix, replacing it with[m
+[00;30m  573 [m    [00;34m#    a slash, as that is an illegal character in a directory name.[m
+[00;30m  574 [m    [00;34m#    This yields a slash-separated list of possible env names.[m
+[00;30m  575 [m    [00;34m# 4. Replace each slash with a newline to show the output one name per line.[m
+[00;30m  576 [m    [00;34m# 5. Eliminate any lines with * on them because that means there[m
+[00;30m  577 [m    [00;34m#    were no envs.[m
+[00;30m  578 [m    [00;00m([mvirtualenvwrapper_cd [00;31m"[m[00;35m$WORKON_HOME[m[00;31m"[m [00;00m&&[m [00;32mecho[m [00;00m*/[m[00;32m$VIRTUALENVWRAPPER_ENV_BIN_DIR[m[00;00m/[mactivate[00;00m)[m [00;34m2[m[00;00m>/[mdev[00;00m/[mnull \
+[00;30m  579 [m        | [00;32mcommand[m [00;35m\t[mr [00;31m"[m[00;35m\n[m[00;31m"[m [00;31m" "[m \
+[00;30m  580 [m        | [00;32mcommand[m \[00;32msed[m [00;31m"s|/[m[00;35m$VIRTUALENVWRAPPER_ENV_BIN_DIR[m[00;31m/activate |/|g"[m \
+[00;30m  581 [m        | [00;32mcommand[m [00;35m\t[mr [00;31m"/"[m [00;31m"[m[00;35m\n[m[00;31m"[m \
+[00;30m  582 [m        | [00;32mcommand[m \[00;32msed[m [00;31m"/^\s*$/d"[m \
+[00;30m  583 [m        | [00;00m([m[00;32munset[m GREP_OPTIONS[00;00m;[m [00;32mcommand[m \[00;32megrep[m [00;32m-v[m [00;31m'^\*$'[m[00;00m)[m [00;34m2[m[00;00m>/[mdev[00;00m/[mnull
+[00;30m  584 [m[00;00m}[m
+[00;30m  585 [m
+[00;30m  586 [m[00;33mfunction[m _lsvirtualenv_usage [00;00m{[m
+[00;30m  587 [m    [00;32mecho[m [00;31m"lsvirtualenv [-blh]"[m
+[00;30m  588 [m    [00;32mecho[m [00;31m"  -b -- brief mode"[m
+[00;30m  589 [m    [00;32mecho[m [00;31m"  -l -- long mode"[m
+[00;30m  590 [m    [00;32mecho[m [00;31m"  -h -- this help message"[m
+[00;30m  591 [m[00;00m}[m
+[00;30m  592 [m
+[00;30m  593 [m[00;34m#:help:lsvirtualenv: list virtualenvs[m
+[00;30m  594 [m[00;33mfunction[m lsvirtualenv [00;00m{[m
+[00;30m  595 [m
+[00;30m  596 [m    typeset long_mode[00;00m=[mtrue
+[00;30m  597 [m    [00;33mif[m [00;32mcommand -v[m [00;31m"getopts"[m [00;00m>/[mdev[00;00m/[mnull [00;34m2[m[00;00m>&[m[00;34m1[m
+[00;30m  598 [m    [00;33mthen[m
+[00;30m  599 [m        [00;34m# Use getopts when possible[m
+[00;30m  600 [m        OPTIND[00;00m=[m[00;34m1[m
+[00;30m  601 [m        [00;33mwhile[m [00;32mgetopts[m [00;31m":blh"[m opt [00;31m"$@"[m
+[00;30m  602 [m        [00;33mdo[m
+[00;30m  603 [m            [00;33mcase[m [00;31m"[m[00;35m$opt[m[00;31m"[m [00;33min[m
+[00;30m  604 [m                l[00;00m)[m long_mode[00;00m=[mtrue[00;00m;;[m
+[00;30m  605 [m                b[00;00m)[m long_mode[00;00m=[mfalse[00;00m;;[m
+[00;30m  606 [m                h[00;00m)[m  _lsvirtualenv_usage[00;00m;[m
+[00;30m  607 [m                    [00;32mreturn[m [00;34m1[m[00;00m;;[m
+[00;30m  608 [m                ?[00;00m)[m [00;32mecho[m [00;31m"Invalid option: -[m[00;35m$OPTARG[m[00;31m"[m [00;00m>&[m[00;34m2[m[00;00m;[m
+[00;30m  609 [m                    _lsvirtualenv_usage[00;00m;[m
+[00;30m  610 [m                    [00;32mreturn[m [00;34m1[m[00;00m;;[m
+[00;30m  611 [m            [00;33mesac[m
+[00;30m  612 [m        [00;33mdone[m
+[00;30m  613 [m    [00;33melse[m
+[00;30m  614 [m        [00;34m# fallback on getopt for other shell[m
+[00;30m  615 [m        typeset [00;32m-a[m args
+[00;30m  616 [m        args[00;00m=([m$[00;00m([mgetopt blh [00;31m"$@"[m[00;00m))[m
+[00;30m  617 [m        [00;33mif[m [00;00m[[m $? [00;00m!=[m [00;34m0[m [00;00m][m
+[00;30m  618 [m        [00;33mthen[m
+[00;30m  619 [m            _lsvirtualenv_usage
+[00;30m  620 [m            [00;32mreturn[m [00;34m1[m
+[00;30m  621 [m        [00;33mfi[m
+[00;30m  622 [m        [00;33mfor[m opt [00;33min[m [00;32m$args[m
+[00;30m  623 [m        [00;33mdo[m
+[00;30m  624 [m            [00;33mcase[m [00;31m"[m[00;35m$opt[m[00;31m"[m [00;33min[m
+[00;30m  625 [m                [00;32m-l[m[00;00m)[m long_mode[00;00m=[mtrue[00;00m;;[m
+[00;30m  626 [m                [00;32m-b[m[00;00m)[m long_mode[00;00m=[mfalse[00;00m;;[m
+[00;30m  627 [m                [00;32m-h[m[00;00m)[m _lsvirtualenv_usage[00;00m;[m
+[00;30m  628 [m                    [00;32mreturn[m [00;34m1[m[00;00m;;[m
+[00;30m  629 [m            [00;33mesac[m
+[00;30m  630 [m        [00;33mdone[m
+[00;30m  631 [m    [00;33mfi[m
+[00;30m  632 [m
+[00;30m  633 [m    [00;33mif[m [00;32m$long_mode[m
+[00;30m  634 [m    [00;33mthen[m
+[00;30m  635 [m        allvirtualenv showvirtualenv [00;31m"[m[00;35m$env_name[m[00;31m"[m
+[00;30m  636 [m    [00;33melse[m
+[00;30m  637 [m        virtualenvwrapper_show_workon_options
+[00;30m  638 [m    [00;33mfi[m
+[00;30m  639 [m[00;00m}[m
+[00;30m  640 [m
+[00;30m  641 [m[00;34m#:help:showvirtualenv: show details of a single virtualenv[m
+[00;30m  642 [m[00;33mfunction[m showvirtualenv [00;00m{[m
+[00;30m  643 [m    typeset env_name[00;00m=[m[00;31m"[m[00;35m$1[m[00;31m"[m
+[00;30m  644 [m    [00;33mif[m [00;00m[[m [00;32m-z[m [00;31m"[m[00;35m$env_name[m[00;31m"[m [00;00m][m
+[00;30m  645 [m    [00;33mthen[m
+[00;30m  646 [m        [00;33mif[m [00;00m[[m [00;32m-z[m [00;31m"[m[00;35m$VIRTUAL_ENV[m[00;31m"[m [00;00m][m
+[00;30m  647 [m        [00;33mthen[m
+[00;30m  648 [m            [00;32mecho[m [00;31m"showvirtualenv [env]"[m
+[00;30m  649 [m            [00;32mreturn[m [00;34m1[m
+[00;30m  650 [m        [00;33mfi[m
+[00;30m  651 [m        env_name[00;00m=[m$[00;00m([m[00;32mbasename[m [00;31m"[m[00;35m$VIRTUAL_ENV[m[00;31m"[m[00;00m)[m
+[00;30m  652 [m    [00;33mfi[m
+[00;30m  653 [m
+[00;30m  654 [m    virtualenvwrapper_run_hook [00;31m"get_env_details"[m [00;31m"[m[00;35m$env_name[m[00;31m"[m
+[00;30m  655 [m    [00;32mecho[m
+[00;30m  656 [m[00;00m}[m
+[00;30m  657 [m
+[00;30m  658 [m[00;34m# Show help for workon[m
+[00;30m  659 [m[00;33mfunction[m virtualenvwrapper_workon_help [00;00m{[m
+[00;30m  660 [m    [00;32mecho[m [00;31m"Usage: workon env_name"[m
+[00;30m  661 [m    [00;32mecho[m [00;31m""[m
+[00;30m  662 [m    [00;32mecho[m [00;31m"           Deactivate any currently activated virtualenv"[m
+[00;30m  663 [m    [00;32mecho[m [00;31m"           and activate the named environment, triggering"[m
+[00;30m  664 [m    [00;32mecho[m [00;31m"           any hooks in the process."[m
+[00;30m  665 [m    [00;32mecho[m [00;31m""[m
+[00;30m  666 [m    [00;32mecho[m [00;31m"       workon"[m
+[00;30m  667 [m    [00;32mecho[m [00;31m""[m
+[00;30m  668 [m    [00;32mecho[m [00;31m"           Print a list of available environments."[m
+[00;30m  669 [m    [00;32mecho[m [00;31m"           (See also lsvirtualenv -b)"[m
+[00;30m  670 [m    [00;32mecho[m [00;31m""[m
+[00;30m  671 [m    [00;32mecho[m [00;31m"       workon (-h|--help)"[m
+[00;30m  672 [m    [00;32mecho[m [00;31m""[m
+[00;30m  673 [m    [00;32mecho[m [00;31m"           Show this help message."[m
+[00;30m  674 [m    [00;32mecho[m [00;31m""[m
+[00;30m  675 [m    [00;32mecho[m [00;31m"       workon (-c|--cd) envname"[m
+[00;30m  676 [m    [00;32mecho[m [00;31m""[m
+[00;30m  677 [m    [00;32mecho[m [00;31m"           After activating the environment, cd to the associated"[m
+[00;30m  678 [m    [00;32mecho[m [00;31m"           project directory if it is set."[m
+[00;30m  679 [m    [00;32mecho[m [00;31m""[m
+[00;30m  680 [m    [00;32mecho[m [00;31m"       workon (-n|--no-cd) envname"[m
+[00;30m  681 [m    [00;32mecho[m [00;31m""[m
+[00;30m  682 [m    [00;32mecho[m [00;31m"           After activating the environment, do not cd to the"[m
+[00;30m  683 [m    [00;32mecho[m [00;31m"           associated project directory."[m
+[00;30m  684 [m    [00;32mecho[m [00;31m""[m
+[00;30m  685 [m[00;00m}[m
+[00;30m  686 [m
+[00;30m  687 [m[00;34m#:help:workon: list or change working virtualenvs[m
+[00;30m  688 [m[00;33mfunction[m workon [00;00m{[m
+[00;30m  689 [m    typeset [00;32m-a[m in_args
+[00;30m  690 [m    typeset [00;32m-a[m out_args
+[00;30m  691 [m
+[00;30m  692 [m    in_args[00;00m=([m [00;31m"$@"[m [00;00m)[m
+[00;30m  693 [m
+[00;30m  694 [m    [00;33mif[m [00;00m[[m [00;32m-n[m [00;31m"[m[00;35m$ZSH_VERSION[m[00;31m"[m [00;00m][m
+[00;30m  695 [m    [00;33mthen[m
+[00;30m  696 [m        i[00;00m=[m[00;34m1[m
+[00;30m  697 [m        tst[00;00m=[m[00;31m"-le"[m
+[00;30m  698 [m    [00;33melse[m
+[00;30m  699 [m        i[00;00m=[m[00;34m0[m
+[00;30m  700 [m        tst[00;00m=[m[00;31m"-lt"[m
+[00;30m  701 [m    [00;33mfi[m
+[00;30m  702 [m    typeset cd_after_activate[00;00m=[m[00;32m$VIRTUALENVWRAPPER_WORKON_CD[m
+[00;30m  703 [m    [00;33mwhile[m [00;00m[[m [00;32m$i $tst $#[m [00;00m][m
+[00;30m  704 [m    [00;33mdo[m
+[00;30m  705 [m        a[00;00m=[m[00;31m"[m[00;35m${in_args[$i]}[m[00;31m"[m
+[00;30m  706 [m        [00;33mcase[m [00;31m"[m[00;35m$a[m[00;31m"[m [00;33min[m
+[00;30m  707 [m            [00;32m-h[m|[00;32m--help[m[00;00m)[m
+[00;30m  708 [m                virtualenvwrapper_workon_help[00;00m;[m
+[00;30m  709 [m                [00;32mreturn[m [00;34m0[m[00;00m;;[m
+[00;30m  710 [m            [00;32m-n[m|[00;32m--no-cd[m[00;00m)[m
+[00;30m  711 [m                cd_after_activate[00;00m=[m[00;34m0[m[00;00m;;[m
+[00;30m  712 [m            [00;32m-c[m|[00;32m--cd[m[00;00m)[m
+[00;30m  713 [m                cd_after_activate[00;00m=[m[00;34m1[m[00;00m;;[m
+[00;30m  714 [m            [00;00m*)[m
+[00;30m  715 [m                [00;33mif[m [00;00m[[m [00;32m${#out_args}[m [00;32m-gt[m [00;34m0[m [00;00m][m
+[00;30m  716 [m                [00;33mthen[m
+[00;30m  717 [m                    out_args[00;00m=([m [00;31m"[m[00;35m${out_args[@]-}[m[00;31m"[m [00;31m"[m[00;35m$a[m[00;31m"[m [00;00m)[m
+[00;30m  718 [m                [00;33melse[m
+[00;30m  719 [m                    out_args[00;00m=([m [00;31m"[m[00;35m$a[m[00;31m"[m [00;00m)[m
+[00;30m  720 [m                [00;33mfi[m[00;00m;;[m
+[00;30m  721 [m        [00;33mesac[m
+[00;30m  722 [m        i[00;00m=[m$[00;00m(([m [00;32m$i[m [00;00m+[m [00;34m1[m [00;00m))[m
+[00;30m  723 [m    [00;33mdone[m
+[00;30m  724 [m
+[00;30m  725 [m    [00;32mset --[m [00;31m"[m[00;35m${out_args[@]}[m[00;31m"[m
+[00;30m  726 [m
+[00;30m  727 [m    typeset env_name[00;00m=[m[00;31m"[m[00;35m$1[m[00;31m"[m
+[00;30m  728 [m    [00;33mif[m [00;00m[[m [00;31m"[m[00;35m$env_name[m[00;31m"[m [00;00m=[m [00;31m""[m [00;00m][m
+[00;30m  729 [m    [00;33mthen[m
+[00;30m  730 [m        lsvirtualenv [00;32m-b[m
+[00;30m  731 [m        [00;32mreturn[m [00;34m1[m
+[00;30m  732 [m    [00;33melif[m [00;00m[[m [00;31m"[m[00;35m$env_name[m[00;31m"[m [00;00m=[m [00;31m"."[m [00;00m][m
+[00;30m  733 [m    [00;33mthen[m
+[00;30m  734 [m        [00;34m# The IFS default of breaking on whitespace causes issues if there[m
+[00;30m  735 [m        [00;34m# are spaces in the env_name, so change it.[m
+[00;30m  736 [m        IFS[00;00m=[m[00;31m'%'[m
+[00;30m  737 [m        env_name[00;00m=[m[00;31m"$(basename $(pwd))"[m
+[00;30m  738 [m        [00;32munset[m IFS
+[00;30m  739 [m    [00;33mfi[m
+[00;30m  740 [m
+[00;30m  741 [m    virtualenvwrapper_verify_workon_home || [00;32mreturn[m [00;34m1[m
+[00;30m  742 [m    virtualenvwrapper_verify_workon_environment [00;31m"[m[00;35m$env_name[m[00;31m"[m || [00;32mreturn[m [00;34m1[m
+[00;30m  743 [m
+[00;30m  744 [m    activate[00;00m=[m[00;31m"[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$env_name[m[00;31m/[m[00;35m$VIRTUALENVWRAPPER_ENV_BIN_DIR[m[00;31m/activate"[m
+[00;30m  745 [m    [00;33mif[m [00;00m[ ![m [00;32m-f[m [00;31m"[m[00;35m$activate[m[00;31m"[m [00;00m][m
+[00;30m  746 [m    [00;33mthen[m
+[00;30m  747 [m        [00;32mecho[m [00;31m"ERROR: Environment '[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$env_name[m[00;31m' does not contain an activate script."[m [00;00m>&[m[00;34m2[m
+[00;30m  748 [m        [00;32mreturn[m [00;34m1[m
+[00;30m  749 [m    [00;33mfi[m
+[00;30m  750 [m
+[00;30m  751 [m    [00;34m# Deactivate any current environment "destructively"[m
+[00;30m  752 [m    [00;34m# before switching so we use our override function,[m
+[00;30m  753 [m    [00;34m# if it exists, but make sure it's the deactivate function[m
+[00;30m  754 [m    [00;34m# we set up[m
+[00;30m  755 [m    [00;32mtype[m deactivate [00;00m>/[mdev[00;00m/[mnull [00;34m2[m[00;00m>&[m[00;34m1[m
+[00;30m  756 [m    [00;33mif[m [00;00m[[m $? [00;32m-eq[m [00;34m0[m [00;00m][m
+[00;30m  757 [m    [00;33mthen[m
+[00;30m  758 [m        [00;32mtype[m deactivate | [00;32mgrep[m [00;31m'typeset env_postdeactivate_hook'[m [00;00m>/[mdev[00;00m/[mnull [00;34m2[m[00;00m>&[m[00;34m1[m
+[00;30m  759 [m        [00;33mif[m [00;00m[[m $? [00;32m-eq[m [00;34m0[m [00;00m][m
+[00;30m  760 [m        [00;33mthen[m
+[00;30m  761 [m            deactivate
+[00;30m  762 [m            [00;32munset -f[m deactivate [00;00m>/[mdev[00;00m/[mnull [00;34m2[m[00;00m>&[m[00;34m1[m
+[00;30m  763 [m        [00;33mfi[m
+[00;30m  764 [m    [00;33mfi[m
+[00;30m  765 [m
+[00;30m  766 [m    virtualenvwrapper_run_hook [00;31m"pre_activate"[m [00;31m"[m[00;35m$env_name[m[00;31m"[m
+[00;30m  767 [m
+[00;30m  768 [m    [00;32msource[m [00;31m"[m[00;35m$activate[m[00;31m"[m
+[00;30m  769 [m
+[00;30m  770 [m    [00;34m# Save the deactivate function from virtualenv under a different name[m
+[00;30m  771 [m    virtualenvwrapper_original_deactivate[00;00m=[m[00;31m`typeset -f deactivate | sed 's/deactivate/virtualenv_deactivate/g'`[m
+[00;30m  772 [m    [00;32meval[m [00;31m"[m[00;35m$virtualenvwrapper_original_deactivate[m[00;31m"[m
+[00;30m  773 [m    [00;32munset -f[m deactivate [00;00m>/[mdev[00;00m/[mnull [00;34m2[m[00;00m>&[m[00;34m1[m
+[00;30m  774 [m
+[00;30m  775 [m    [00;34m# Replace the deactivate() function with a wrapper.[m
+[00;30m  776 [m    [00;32meval[m [00;31m'deactivate () {[m
+[00;30m  777 [m[00;31m        typeset env_postdeactivate_hook[m
+[00;30m  778 [m[00;31m        typeset old_env[m
+[00;30m  779 [m[00;31m[m
+[00;30m  780 [m[00;31m        # Call the local hook before the global so we can undo[m
+[00;30m  781 [m[00;31m        # any settings made by the local postactivate first.[m
+[00;30m  782 [m[00;31m        virtualenvwrapper_run_hook "pre_deactivate"[m
+[00;30m  783 [m[00;31m[m
+[00;30m  784 [m[00;31m        env_postdeactivate_hook="[m[00;35m$VIRTUAL_ENV[m[00;31m/[m[00;35m$VIRTUALENVWRAPPER_ENV_BIN_DIR[m[00;31m/postdeactivate"[m
+[00;30m  785 [m[00;31m        old_env=$(basename "[m[00;35m$VIRTUAL_ENV[m[00;31m")[m
+[00;30m  786 [m[00;31m[m
+[00;30m  787 [m[00;31m        # Call the original function.[m
+[00;30m  788 [m[00;31m        virtualenv_deactivate[m [00;35m$1[m
+[00;30m  789 [m[00;31m[m
+[00;30m  790 [m[00;31m        virtualenvwrapper_run_hook "post_deactivate" "[m[00;35m$old_env[m[00;31m"[m
+[00;30m  791 [m[00;31m[m
+[00;30m  792 [m[00;31m        if [ ! "[m[00;35m$1[m[00;31m" = "nondestructive" ][m
+[00;30m  793 [m[00;31m        then[m
+[00;30m  794 [m[00;31m            # Remove this function[m
+[00;30m  795 [m[00;31m            unset -f virtualenv_deactivate >/dev/null 2>&1[m
+[00;30m  796 [m[00;31m            unset -f deactivate >/dev/null 2>&1[m
+[00;30m  797 [m[00;31m        fi[m
+[00;30m  798 [m[00;31m[m
+[00;30m  799 [m[00;31m    }'[m
+[00;30m  800 [m
+[00;30m  801 [m    VIRTUALENVWRAPPER_PROJECT_CD[00;00m=[m[00;32m$cd_after_activate[m virtualenvwrapper_run_hook [00;31m"post_activate"[m
+[00;30m  802 [m
+[00;30m  803 [m    [00;32mreturn[m [00;34m0[m
+[00;30m  804 [m[00;00m}[m
+[00;30m  805 [m
+[00;30m  806 [m
+[00;30m  807 [m[00;34m# Prints the Python version string for the current interpreter.[m
+[00;30m  808 [m[00;33mfunction[m virtualenvwrapper_get_python_version [00;00m{[m
+[00;30m  809 [m    [00;34m# Uses the Python from the virtualenv rather than[m
+[00;30m  810 [m    [00;34m# VIRTUALENVWRAPPER_PYTHON because we're trying to determine the[m
+[00;30m  811 [m    [00;34m# version installed there so we can build up the path to the[m
+[00;30m  812 [m    [00;34m# site-packages directory.[m
+[00;30m  813 [m    [00;31m"[m[00;35m$VIRTUAL_ENV[m[00;31m/[m[00;35m$VIRTUALENVWRAPPER_ENV_BIN_DIR[m[00;31m/python"[m [00;32m-V[m [00;34m2[m[00;00m>&[m[00;34m1[m | cut [00;32m-f2 -d[m[00;31m' '[m | cut [00;32m-f-2 -d[m.
+[00;30m  814 [m[00;00m}[m
+[00;30m  815 [m
+[00;30m  816 [m[00;34m# Prints the path to the site-packages directory for the current environment.[m
+[00;30m  817 [m[00;33mfunction[m virtualenvwrapper_get_site_packages_dir [00;00m{[m
+[00;30m  818 [m    [00;31m"[m[00;35m$VIRTUAL_ENV[m[00;31m/[m[00;35m$VIRTUALENVWRAPPER_ENV_BIN_DIR[m[00;31m/python"[m [00;32m-c[m [00;31m"import distutils.sysconfig; print(distutils.sysconfig.get_python_lib())"[m
+[00;30m  819 [m[00;00m}[m
+[00;30m  820 [m
+[00;30m  821 [m[00;34m# Path management for packages outside of the virtual env.[m
+[00;30m  822 [m[00;34m# Based on a contribution from James Bennett and Jannis Leidel.[m
+[00;30m  823 [m[00;34m#[m
+[00;30m  824 [m[00;34m# add2virtualenv directory1 directory2 ...[m
+[00;30m  825 [m[00;34m#[m
+[00;30m  826 [m[00;34m# Adds the specified directories to the Python path for the[m
+[00;30m  827 [m[00;34m# currently-active virtualenv. This will be done by placing the[m
+[00;30m  828 [m[00;34m# directory names in a path file named[m
+[00;30m  829 [m[00;34m# "virtualenv_path_extensions.pth" inside the virtualenv's[m
+[00;30m  830 [m[00;34m# site-packages directory; if this file does not exist, it will be[m
+[00;30m  831 [m[00;34m# created first.[m
+[00;30m  832 [m[00;34m#[m
+[00;30m  833 [m[00;34m#:help:add2virtualenv: add directory to the import path[m
+[00;30m  834 [m[00;33mfunction[m add2virtualenv [00;00m{[m
+[00;30m  835 [m    virtualenvwrapper_verify_workon_home || [00;32mreturn[m [00;34m1[m
+[00;30m  836 [m    virtualenvwrapper_verify_active_environment || [00;32mreturn[m [00;34m1[m
+[00;30m  837 [m
+[00;30m  838 [m    site_packages[00;00m=[m[00;31m"`virtualenvwrapper_get_site_packages_dir`"[m
+[00;30m  839 [m
+[00;30m  840 [m    [00;33mif[m [00;00m[ ![m [00;32m-d[m [00;31m"[m[00;35m${site_packages}[m[00;31m"[m [00;00m][m
+[00;30m  841 [m    [00;33mthen[m
+[00;30m  842 [m        [00;32mecho[m [00;31m"ERROR: currently-active virtualenv does not appear to have a site-packages directory"[m [00;00m>&[m[00;34m2[m
+[00;30m  843 [m        [00;32mreturn[m [00;34m1[m
+[00;30m  844 [m    [00;33mfi[m
+[00;30m  845 [m
+[00;30m  846 [m    [00;34m# Prefix with _ to ensure we are loaded as early as possible,[m
+[00;30m  847 [m    [00;34m# and at least before easy_install.pth.[m
+[00;30m  848 [m    path_file[00;00m=[m[00;31m"[m[00;35m$site_packages[m[00;31m/_virtualenv_path_extensions.pth"[m
+[00;30m  849 [m
+[00;30m  850 [m    [00;33mif[m [00;00m[[m [00;31m"$*"[m [00;00m=[m [00;31m""[m [00;00m][m
+[00;30m  851 [m    [00;33mthen[m
+[00;30m  852 [m        [00;32mecho[m [00;31m"Usage: add2virtualenv dir [dir ...]"[m
+[00;30m  853 [m        [00;33mif[m [00;00m[[m [00;32m-f[m [00;31m"[m[00;35m$path_file[m[00;31m"[m [00;00m][m
+[00;30m  854 [m        [00;33mthen[m
+[00;30m  855 [m            [00;32mecho[m
+[00;30m  856 [m            [00;32mecho[m [00;31m"Existing paths:"[m
+[00;30m  857 [m            [00;32mcat[m [00;31m"[m[00;35m$path_file[m[00;31m"[m | [00;32mgrep[m [00;32m-v[m [00;31m"^import"[m
+[00;30m  858 [m        [00;33mfi[m
+[00;30m  859 [m        [00;32mreturn[m [00;34m1[m
+[00;30m  860 [m    [00;33mfi[m
+[00;30m  861 [m
+[00;30m  862 [m    remove[00;00m=[m[00;34m0[m
+[00;30m  863 [m    [00;33mif[m [00;00m[[m [00;31m"[m[00;35m$1[m[00;31m"[m [00;00m=[m [00;31m"-d"[m [00;00m][m
+[00;30m  864 [m    [00;33mthen[m
+[00;30m  865 [m        remove[00;00m=[m[00;34m1[m
+[00;30m  866 [m        [00;32mshift[m
+[00;30m  867 [m    [00;33mfi[m
+[00;30m  868 [m
+[00;30m  869 [m    [00;33mif[m [00;00m[ ![m [00;32m-f[m [00;31m"[m[00;35m$path_file[m[00;31m"[m [00;00m][m
+[00;30m  870 [m    [00;33mthen[m
+[00;30m  871 [m        [00;32mecho[m [00;31m"import sys; sys.__plen = len(sys.path)"[m [00;00m>[m [00;31m"[m[00;35m$path_file[m[00;31m"[m || [00;32mreturn[m [00;34m1[m
+[00;30m  872 [m        [00;32mecho[m [00;31m"import sys; new=sys.path[sys.__plen:]; del sys.path[sys.__plen:]; p=getattr(sys,'__egginsert',0); sys.path[p:p]=new; sys.__egginsert = p+len(new)"[m [00;00m>>[m [00;31m"[m[00;35m$path_file[m[00;31m"[m || [00;32mreturn[m [00;34m1[m
+[00;30m  873 [m    [00;33mfi[m
+[00;30m  874 [m
+[00;30m  875 [m    [00;33mfor[m pydir [00;33min[m [00;31m"$@"[m
+[00;30m  876 [m    [00;33mdo[m
+[00;30m  877 [m        absolute_path[00;00m=[m[00;31m"$(virtualenvwrapper_absolutepath "[m[00;32m$pydir[m[00;31m")"[m
+[00;30m  878 [m        [00;33mif[m [00;00m[[m [00;31m"[m[00;35m$absolute_path[m[00;31m"[m [00;00m!=[m [00;31m"[m[00;35m$pydir[m[00;31m"[m [00;00m][m
+[00;30m  879 [m        [00;33mthen[m
+[00;30m  880 [m            [00;32mecho[m [00;31m"Warning: Converting[m [00;35m\"[m[00;31m[m[00;35m$pydir[m[00;31m[m[00;35m\"[m [00;31mto[m [00;35m\"[m[00;31m[m[00;35m$absolute_path[m[00;31m[m[00;35m\"[m[00;31m"[m [00;34m1[m[00;00m>&[m[00;34m2[m
+[00;30m  881 [m        [00;33mfi[m
+[00;30m  882 [m
+[00;30m  883 [m        [00;33mif[m [00;00m[[m [00;32m$remove[m [00;32m-eq[m [00;34m1[m [00;00m][m
+[00;30m  884 [m        [00;33mthen[m
+[00;30m  885 [m            [00;32msed[m [00;32m-i[m.tmp [00;31m"\:^[m[00;35m$absolute_path[m[00;31m$: d"[m [00;31m"[m[00;35m$path_file[m[00;31m"[m
+[00;30m  886 [m        [00;33melse[m
+[00;30m  887 [m            [00;32msed[m [00;32m-i[m.tmp [00;31m'1 a\[m
+[00;30m  888 [m[00;31m'[m[00;31m"[m[00;35m$absolute_path[m[00;31m"[m[00;31m'[m
+[00;30m  889 [m[00;31m'[m [00;31m"[m[00;35m$path_file[m[00;31m"[m
+[00;30m  890 [m        [00;33mfi[m
+[00;30m  891 [m        [00;32mrm[m [00;32m-f[m [00;31m"[m[00;35m${path_file}[m[00;31m.tmp"[m
+[00;30m  892 [m    [00;33mdone[m
+[00;30m  893 [m    [00;32mreturn[m [00;34m0[m
+[00;30m  894 [m[00;00m}[m
+[00;30m  895 [m
+[00;30m  896 [m[00;34m# Does a ``cd`` to the site-packages directory of the currently-active[m
+[00;30m  897 [m[00;34m# virtualenv.[m
+[00;30m  898 [m[00;34m#:help:cdsitepackages: change to the site-packages directory[m
+[00;30m  899 [m[00;33mfunction[m cdsitepackages [00;00m{[m
+[00;30m  900 [m    virtualenvwrapper_verify_workon_home || [00;32mreturn[m [00;34m1[m
+[00;30m  901 [m    virtualenvwrapper_verify_active_environment || [00;32mreturn[m [00;34m1[m
+[00;30m  902 [m    typeset site_packages[00;00m=[m[00;31m"`virtualenvwrapper_get_site_packages_dir`"[m
+[00;30m  903 [m    virtualenvwrapper_cd [00;31m"[m[00;35m$site_packages[m[00;31m/[m[00;35m$1[m[00;31m"[m
+[00;30m  904 [m[00;00m}[m
+[00;30m  905 [m
+[00;30m  906 [m[00;34m# Does a ``cd`` to the root of the currently-active virtualenv.[m
+[00;30m  907 [m[00;34m#:help:cdvirtualenv: change to the $VIRTUAL_ENV directory[m
+[00;30m  908 [m[00;33mfunction[m cdvirtualenv [00;00m{[m
+[00;30m  909 [m    virtualenvwrapper_verify_workon_home || [00;32mreturn[m [00;34m1[m
+[00;30m  910 [m    virtualenvwrapper_verify_active_environment || [00;32mreturn[m [00;34m1[m
+[00;30m  911 [m    virtualenvwrapper_cd [00;31m"[m[00;35m$VIRTUAL_ENV[m[00;31m/[m[00;35m$1[m[00;31m"[m
+[00;30m  912 [m[00;00m}[m
+[00;30m  913 [m
+[00;30m  914 [m[00;34m# Shows the content of the site-packages directory of the currently-active[m
+[00;30m  915 [m[00;34m# virtualenv[m
+[00;30m  916 [m[00;34m#:help:lssitepackages: list contents of the site-packages directory[m
+[00;30m  917 [m[00;33mfunction[m lssitepackages [00;00m{[m
+[00;30m  918 [m    virtualenvwrapper_verify_workon_home || [00;32mreturn[m [00;34m1[m
+[00;30m  919 [m    virtualenvwrapper_verify_active_environment || [00;32mreturn[m [00;34m1[m
+[00;30m  920 [m    typeset site_packages[00;00m=[m[00;31m"`virtualenvwrapper_get_site_packages_dir`"[m
+[00;30m  921 [m    [00;32mls[m $@ [00;31m"[m[00;35m$site_packages[m[00;31m"[m
+[00;30m  922 [m
+[00;30m  923 [m    path_file[00;00m=[m[00;31m"[m[00;35m$site_packages[m[00;31m/_virtualenv_path_extensions.pth"[m
+[00;30m  924 [m    [00;33mif[m [00;00m[[m [00;32m-f[m [00;31m"[m[00;35m$path_file[m[00;31m"[m [00;00m][m
+[00;30m  925 [m    [00;33mthen[m
+[00;30m  926 [m        [00;32mecho[m
+[00;30m  927 [m        [00;32mecho[m [00;31m"_virtualenv_path_extensions.pth:"[m
+[00;30m  928 [m        [00;32mcat[m [00;31m"[m[00;35m$path_file[m[00;31m"[m
+[00;30m  929 [m    [00;33mfi[m
+[00;30m  930 [m[00;00m}[m
+[00;30m  931 [m
+[00;30m  932 [m[00;34m# Toggles the currently-active virtualenv between having and not having[m
+[00;30m  933 [m[00;34m# access to the global site-packages.[m
+[00;30m  934 [m[00;34m#:help:toggleglobalsitepackages: turn access to global site-packages on/off[m
+[00;30m  935 [m[00;33mfunction[m toggleglobalsitepackages [00;00m{[m
+[00;30m  936 [m    virtualenvwrapper_verify_workon_home || [00;32mreturn[m [00;34m1[m
+[00;30m  937 [m    virtualenvwrapper_verify_active_environment || [00;32mreturn[m [00;34m1[m
+[00;30m  938 [m    typeset no_global_site_packages_file[00;00m=[m[00;31m"`virtualenvwrapper_get_site_packages_dir`/../no-global-site-packages.txt"[m
+[00;30m  939 [m    [00;33mif[m [00;00m[[m [00;32m-f[m [00;32m$no_global_site_packages_file[m [00;00m];[m [00;33mthen[m
+[00;30m  940 [m        [00;32mrm[m [00;32m$no_global_site_packages_file[m
+[00;30m  941 [m        [00;00m[[m [00;31m"[m[00;35m$1[m[00;31m"[m [00;00m=[m [00;31m"-q"[m [00;00m][m || [00;32mecho[m [00;31m"Enabled global site-packages"[m
+[00;30m  942 [m    [00;33melse[m
+[00;30m  943 [m        [00;32mtouch[m [00;32m$no_global_site_packages_file[m
+[00;30m  944 [m        [00;00m[[m [00;31m"[m[00;35m$1[m[00;31m"[m [00;00m=[m [00;31m"-q"[m [00;00m][m || [00;32mecho[m [00;31m"Disabled global site-packages"[m
+[00;30m  945 [m    [00;33mfi[m
+[00;30m  946 [m[00;00m}[m
+[00;30m  947 [m
+[00;30m  948 [m[00;34m#:help:cpvirtualenv: duplicate the named virtualenv to make a new one[m
+[00;30m  949 [m[00;33mfunction[m cpvirtualenv [00;00m{[m
+[00;30m  950 [m    virtualenvwrapper_verify_workon_home || [00;32mreturn[m [00;34m1[m
+[00;30m  951 [m    virtualenvwrapper_verify_virtualenv_clone || [00;32mreturn[m [00;34m1[m
+[00;30m  952 [m
+[00;30m  953 [m    typeset src_name[00;00m=[m[00;31m"[m[00;35m$1[m[00;31m"[m
+[00;30m  954 [m    typeset trg_name[00;00m=[m[00;31m"[m[00;35m$2[m[00;31m"[m
+[00;30m  955 [m    typeset src
+[00;30m  956 [m    typeset trg
+[00;30m  957 [m
+[00;30m  958 [m    [00;34m# without a source there is nothing to do[m
+[00;30m  959 [m    [00;33mif[m [00;00m[[m [00;31m"[m[00;35m$src_name[m[00;31m"[m [00;00m=[m [00;31m""[m [00;00m];[m [00;33mthen[m
+[00;30m  960 [m        [00;32mecho[m [00;31m"Please provide a valid virtualenv to copy."[m
+[00;30m  961 [m        [00;32mreturn[m [00;34m1[m
+[00;30m  962 [m    [00;33melse[m
+[00;30m  963 [m        [00;34m# see if it's already in workon[m
+[00;30m  964 [m        [00;33mif[m [00;00m[ ![m [00;32m-e[m [00;31m"[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$src_name[m[00;31m"[m [00;00m];[m [00;33mthen[m
+[00;30m  965 [m            [00;34m# so it's a virtualenv we are importing[m
+[00;30m  966 [m            [00;34m# make sure we have a full path[m
+[00;30m  967 [m            [00;34m# and get the name[m
+[00;30m  968 [m            src[00;00m=[m[00;31m"$(virtualenvwrapper_expandpath "[m[00;32m$src_name[m[00;31m")"[m
+[00;30m  969 [m            [00;34m# final verification[m
+[00;30m  970 [m            [00;33mif[m [00;00m[ ![m [00;32m-e[m [00;31m"[m[00;35m$src[m[00;31m"[m [00;00m];[m [00;33mthen[m
+[00;30m  971 [m                [00;32mecho[m [00;31m"Please provide a valid virtualenv to copy."[m
+[00;30m  972 [m                [00;32mreturn[m [00;34m1[m
+[00;30m  973 [m            [00;33mfi[m
+[00;30m  974 [m            src_name[00;00m=[m[00;31m"$(basename "[m[00;32m$src[m[00;31m")"[m
+[00;30m  975 [m        [00;33melse[m
+[00;30m  976 [m           src[00;00m=[m[00;31m"[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$src_name[m[00;31m"[m
+[00;30m  977 [m        [00;33mfi[m
+[00;30m  978 [m    [00;33mfi[m
+[00;30m  979 [m
+[00;30m  980 [m    [00;33mif[m [00;00m[[m [00;31m"[m[00;35m$trg_name[m[00;31m"[m [00;00m=[m [00;31m""[m [00;00m];[m [00;33mthen[m
+[00;30m  981 [m        [00;34m# target not given, assume[m
+[00;30m  982 [m        [00;34m# same as source[m
+[00;30m  983 [m        trg[00;00m=[m[00;31m"[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$src_name[m[00;31m"[m
+[00;30m  984 [m        trg_name[00;00m=[m[00;31m"[m[00;35m$src_name[m[00;31m"[m
+[00;30m  985 [m    [00;33melse[m
+[00;30m  986 [m        trg[00;00m=[m[00;31m"[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$trg_name[m[00;31m"[m
+[00;30m  987 [m    [00;33mfi[m
+[00;30m  988 [m    trg[00;00m=[m[00;31m"$(virtualenvwrapper_expandpath "[m[00;32m$trg[m[00;31m")"[m
+[00;30m  989 [m
+[00;30m  990 [m    [00;34m# validate trg does not already exist[m
+[00;30m  991 [m    [00;34m# catch copying virtualenv in workon home[m
+[00;30m  992 [m    [00;34m# to workon home[m
+[00;30m  993 [m    [00;33mif[m [00;00m[[m [00;32m-e[m [00;31m"[m[00;35m$trg[m[00;31m"[m [00;00m];[m [00;33mthen[m
+[00;30m  994 [m        [00;32mecho[m [00;31m"[m[00;35m$trg_name[m [00;31mvirtualenv already exists."[m
+[00;30m  995 [m        [00;32mreturn[m [00;34m1[m
+[00;30m  996 [m    [00;33mfi[m
+[00;30m  997 [m
+[00;30m  998 [m    [00;32mecho[m [00;31m"Copying[m [00;35m$src_name[m [00;31mas[m [00;35m$trg_name[m[00;31m..."[m
+[00;30m  999 [m    [00;00m([m
+[00;30m 1000 [m        [00;00m[[m [00;32m-n[m [00;31m"[m[00;35m$ZSH_VERSION[m[00;31m"[m [00;00m] &&[m setopt SH_WORD_SPLIT
+[00;30m 1001 [m        virtualenvwrapper_cd [00;31m"[m[00;35m$WORKON_HOME[m[00;31m"[m [00;00m&&[m
+[00;30m 1002 [m        [00;31m"[m[00;35m$VIRTUALENVWRAPPER_VIRTUALENV_CLONE[m[00;31m"[m [00;31m"[m[00;35m$src[m[00;31m"[m [00;31m"[m[00;35m$trg[m[00;31m"[m
+[00;30m 1003 [m        [00;00m[[m [00;32m-d[m [00;31m"[m[00;35m$trg[m[00;31m"[m [00;00m] &&[m
+[00;30m 1004 [m            virtualenvwrapper_run_hook [00;31m"pre_cpvirtualenv"[m [00;31m"[m[00;35m$src[m[00;31m"[m [00;31m"[m[00;35m$trg_name[m[00;31m"[m [00;00m&&[m
+[00;30m 1005 [m            virtualenvwrapper_run_hook [00;31m"pre_mkvirtualenv"[m [00;31m"[m[00;35m$trg_name[m[00;31m"[m
+[00;30m 1006 [m    [00;00m)[m
+[00;30m 1007 [m    typeset RC[00;00m=[m$?
+[00;30m 1008 [m    [00;00m[[m [00;32m$RC[m [00;32m-ne[m [00;34m0[m [00;00m] &&[m [00;32mreturn[m [00;32m$RC[m
+[00;30m 1009 [m
+[00;30m 1010 [m    [00;00m[ ![m [00;32m-d[m [00;31m"[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$trg_name[m[00;31m"[m [00;00m] &&[m [00;32mreturn[m [00;34m1[m
+[00;30m 1011 [m
+[00;30m 1012 [m    [00;34m# Now activate the new environment[m
+[00;30m 1013 [m    workon [00;31m"[m[00;35m$trg_name[m[00;31m"[m
+[00;30m 1014 [m
+[00;30m 1015 [m    virtualenvwrapper_run_hook [00;31m"post_mkvirtualenv"[m
+[00;30m 1016 [m    virtualenvwrapper_run_hook [00;31m"post_cpvirtualenv"[m
+[00;30m 1017 [m[00;00m}[m
+[00;30m 1018 [m
+[00;30m 1019 [m[00;34m#[m
+[00;30m 1020 [m[00;34m# virtualenvwrapper project functions[m
+[00;30m 1021 [m[00;34m#[m
+[00;30m 1022 [m
+[00;30m 1023 [m[00;34m# Verify that the PROJECT_HOME directory exists[m
+[00;30m 1024 [m[00;33mfunction[m virtualenvwrapper_verify_project_home [00;00m{[m
+[00;30m 1025 [m    [00;33mif[m [00;00m[[m [00;32m-z[m [00;31m"[m[00;35m$PROJECT_HOME[m[00;31m"[m [00;00m][m
+[00;30m 1026 [m    [00;33mthen[m
+[00;30m 1027 [m        [00;32mecho[m [00;31m"ERROR: Set the PROJECT_HOME shell variable to the name of the directory where projects should be created."[m [00;00m>&[m[00;34m2[m
+[00;30m 1028 [m        [00;32mreturn[m [00;34m1[m
+[00;30m 1029 [m    [00;33mfi[m
+[00;30m 1030 [m    [00;33mif[m [00;00m[ ![m [00;32m-d[m [00;31m"[m[00;35m$PROJECT_HOME[m[00;31m"[m [00;00m][m
+[00;30m 1031 [m    [00;33mthen[m
+[00;30m 1032 [m        [00;00m[[m [00;31m"[m[00;35m$1[m[00;31m"[m [00;00m!=[m [00;31m"-q"[m [00;00m] &&[m [00;32mecho[m [00;31m"ERROR: Project directory '[m[00;35m$PROJECT_HOME[m[00;31m' does not exist.  Create it or set PROJECT_HOME to an existing directory."[m [00;00m>&[m[00;34m2[m
+[00;30m 1033 [m        [00;32mreturn[m [00;34m1[m
+[00;30m 1034 [m    [00;33mfi[m
+[00;30m 1035 [m    [00;32mreturn[m [00;34m0[m
+[00;30m 1036 [m[00;00m}[m
+[00;30m 1037 [m
+[00;30m 1038 [m[00;34m# Given a virtualenv directory and a project directory,[m
+[00;30m 1039 [m[00;34m# set the virtualenv up to be associated with the[m
+[00;30m 1040 [m[00;34m# project[m
+[00;30m 1041 [m[00;34m#:help:setvirtualenvproject: associate a project directory with a virtualenv[m
+[00;30m 1042 [m[00;33mfunction[m setvirtualenvproject [00;00m{[m
+[00;30m 1043 [m    typeset venv[00;00m=[m[00;31m"[m[00;35m$1[m[00;31m"[m
+[00;30m 1044 [m    typeset prj[00;00m=[m[00;31m"[m[00;35m$2[m[00;31m"[m
+[00;30m 1045 [m    [00;33mif[m [00;00m[[m [00;32m-z[m [00;31m"[m[00;35m$venv[m[00;31m"[m [00;00m][m
+[00;30m 1046 [m    [00;33mthen[m
+[00;30m 1047 [m        venv[00;00m=[m[00;31m"[m[00;35m$VIRTUAL_ENV[m[00;31m"[m
+[00;30m 1048 [m    [00;33mfi[m
+[00;30m 1049 [m    [00;33mif[m [00;00m[[m [00;32m-z[m [00;31m"[m[00;35m$prj[m[00;31m"[m [00;00m][m
+[00;30m 1050 [m    [00;33mthen[m
+[00;30m 1051 [m        prj[00;00m=[m[00;31m"$(pwd)"[m
+[00;30m 1052 [m    [00;33melse[m
+[00;30m 1053 [m        prj[00;00m=[m$[00;00m([mvirtualenvwrapper_absolutepath [00;31m"[m[00;35m${prj}[m[00;31m"[m[00;00m)[m
+[00;30m 1054 [m    [00;33mfi[m
+[00;30m 1055 [m
+[00;30m 1056 [m    [00;34m# If what we were given isn't a directory, see if it is under[m
+[00;30m 1057 [m    [00;34m# $WORKON_HOME.[m
+[00;30m 1058 [m    [00;33mif[m [00;00m[ ![m [00;32m-d[m [00;31m"[m[00;35m$venv[m[00;31m"[m [00;00m][m
+[00;30m 1059 [m    [00;33mthen[m
+[00;30m 1060 [m        venv[00;00m=[m[00;31m"[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$venv[m[00;31m"[m
+[00;30m 1061 [m    [00;33mfi[m
+[00;30m 1062 [m    [00;33mif[m [00;00m[ ![m [00;32m-d[m [00;31m"[m[00;35m$venv[m[00;31m"[m [00;00m][m
+[00;30m 1063 [m    [00;33mthen[m
+[00;30m 1064 [m        [00;32mecho[m [00;31m"No virtualenv $(basename[m [00;35m$venv[m[00;31m)"[m [00;34m1[m[00;00m>&[m[00;34m2[m
+[00;30m 1065 [m        [00;32mreturn[m [00;34m1[m
+[00;30m 1066 [m    [00;33mfi[m
+[00;30m 1067 [m
+[00;30m 1068 [m    [00;34m# Make sure we have a valid project setting[m
+[00;30m 1069 [m    [00;33mif[m [00;00m[ ![m [00;32m-d[m [00;31m"[m[00;35m$prj[m[00;31m"[m [00;00m][m
+[00;30m 1070 [m    [00;33mthen[m
+[00;30m 1071 [m        [00;32mecho[m [00;31m"Cannot associate virtualenv with[m [00;35m\"[m[00;31m[m[00;35m$prj[m[00;31m[m[00;35m\"[m[00;31m, it is not a directory"[m [00;34m1[m[00;00m>&[m[00;34m2[m
+[00;30m 1072 [m        [00;32mreturn[m [00;34m1[m
+[00;30m 1073 [m    [00;33mfi[m
+[00;30m 1074 [m
+[00;30m 1075 [m    [00;32mecho[m [00;31m"Setting project for $(basename[m [00;35m$venv[m[00;31m) to[m [00;35m$prj[m[00;31m"[m
+[00;30m 1076 [m    [00;32mecho[m [00;31m"[m[00;35m$prj[m[00;31m"[m [00;00m>[m [00;31m"[m[00;35m$venv[m[00;31m/[m[00;35m$VIRTUALENVWRAPPER_PROJECT_FILENAME[m[00;31m"[m
+[00;30m 1077 [m[00;00m}[m
+[00;30m 1078 [m
+[00;30m 1079 [m[00;34m# Show help for mkproject[m
+[00;30m 1080 [m[00;33mfunction[m virtualenvwrapper_mkproject_help [00;00m{[m
+[00;30m 1081 [m    [00;32mecho[m [00;31m"Usage: mkproject [-f|--force] [-t template] [virtualenv options] project_name"[m
+[00;30m 1082 [m    [00;32mecho[m
+[00;30m 1083 [m    [00;32mecho[m [00;31m"-f, --force    Create the virtualenv even if the project directory"[m
+[00;30m 1084 [m    [00;32mecho[m [00;31m"               already exists"[m
+[00;30m 1085 [m    [00;32mecho[m
+[00;30m 1086 [m    [00;32mecho[m [00;31m"Multiple templates may be selected.  They are applied in the order"[m
+[00;30m 1087 [m    [00;32mecho[m [00;31m"specified on the command line."[m
+[00;30m 1088 [m    [00;32mecho[m
+[00;30m 1089 [m    [00;32mecho[m [00;31m"mkvirtualenv help:"[m
+[00;30m 1090 [m    [00;32mecho[m
+[00;30m 1091 [m    mkvirtualenv [00;32m-h[m
+[00;30m 1092 [m    [00;32mecho[m
+[00;30m 1093 [m    [00;32mecho[m [00;31m"Available project templates:"[m
+[00;30m 1094 [m    [00;32mecho[m
+[00;30m 1095 [m    [00;31m"[m[00;35m$VIRTUALENVWRAPPER_PYTHON[m[00;31m"[m [00;32m-c[m [00;31m'from virtualenvwrapper.hook_loader import main; main()'[m [00;32m-l[m project.template
+[00;30m 1096 [m[00;00m}[m
+[00;30m 1097 [m
+[00;30m 1098 [m[00;34m#:help:mkproject: create a new project directory and its associated virtualenv[m
+[00;30m 1099 [m[00;33mfunction[m mkproject [00;00m{[m
+[00;30m 1100 [m    typeset [00;32m-a[m in_args
+[00;30m 1101 [m    typeset [00;32m-a[m out_args
+[00;30m 1102 [m    typeset [00;32m-i[m i
+[00;30m 1103 [m    typeset tst
+[00;30m 1104 [m    typeset a
+[00;30m 1105 [m    typeset t
+[00;30m 1106 [m    typeset force
+[00;30m 1107 [m    typeset templates
+[00;30m 1108 [m
+[00;30m 1109 [m    in_args[00;00m=([m [00;31m"$@"[m [00;00m)[m
+[00;30m 1110 [m    force[00;00m=[m[00;34m0[m
+[00;30m 1111 [m
+[00;30m 1112 [m    [00;33mif[m [00;00m[[m [00;32m-n[m [00;31m"[m[00;35m$ZSH_VERSION[m[00;31m"[m [00;00m][m
+[00;30m 1113 [m    [00;33mthen[m
+[00;30m 1114 [m        i[00;00m=[m[00;34m1[m
+[00;30m 1115 [m        tst[00;00m=[m[00;31m"-le"[m
+[00;30m 1116 [m    [00;33melse[m
+[00;30m 1117 [m        i[00;00m=[m[00;34m0[m
+[00;30m 1118 [m        tst[00;00m=[m[00;31m"-lt"[m
+[00;30m 1119 [m    [00;33mfi[m
+[00;30m 1120 [m    [00;33mwhile[m [00;00m[[m [00;32m$i $tst $#[m [00;00m][m
+[00;30m 1121 [m    [00;33mdo[m
+[00;30m 1122 [m        a[00;00m=[m[00;31m"[m[00;35m${in_args[$i]}[m[00;31m"[m
+[00;30m 1123 [m        [00;33mcase[m [00;31m"[m[00;35m$a[m[00;31m"[m [00;33min[m
+[00;30m 1124 [m            [00;32m-h[m|[00;32m--help[m[00;00m)[m
+[00;30m 1125 [m                virtualenvwrapper_mkproject_help[00;00m;[m
+[00;30m 1126 [m                [00;32mreturn[m[00;00m;;[m
+[00;30m 1127 [m            [00;32m-f[m|[00;32m--force[m[00;00m)[m
+[00;30m 1128 [m                force[00;00m=[m[00;34m1[m[00;00m;;[m
+[00;30m 1129 [m            [00;32m-t[m[00;00m)[m
+[00;30m 1130 [m                i[00;00m=[m$[00;00m(([m [00;32m$i[m [00;00m+[m [00;34m1[m [00;00m));[m
+[00;30m 1131 [m                templates[00;00m=[m[00;31m"[m[00;35m$templates[m [00;31m[m[00;35m${in_args[$i]}[m[00;31m"[m[00;00m;;[m
+[00;30m 1132 [m            [00;00m*)[m
+[00;30m 1133 [m                [00;33mif[m [00;00m[[m [00;32m${#out_args}[m [00;32m-gt[m [00;34m0[m [00;00m][m
+[00;30m 1134 [m                [00;33mthen[m
+[00;30m 1135 [m                    out_args[00;00m=([m [00;31m"[m[00;35m${out_args[@]-}[m[00;31m"[m [00;31m"[m[00;35m$a[m[00;31m"[m [00;00m)[m
+[00;30m 1136 [m                [00;33melse[m
+[00;30m 1137 [m                    out_args[00;00m=([m [00;31m"[m[00;35m$a[m[00;31m"[m [00;00m)[m
+[00;30m 1138 [m                [00;33mfi[m[00;00m;;[m
+[00;30m 1139 [m        [00;33mesac[m
+[00;30m 1140 [m        i[00;00m=[m$[00;00m(([m [00;32m$i[m [00;00m+[m [00;34m1[m [00;00m))[m
+[00;30m 1141 [m    [00;33mdone[m
+[00;30m 1142 [m
+[00;30m 1143 [m    [00;32mset --[m [00;31m"[m[00;35m${out_args[@]}[m[00;31m"[m
+[00;30m 1144 [m
+[00;30m 1145 [m    [00;34m# echo "templates $templates"[m
+[00;30m 1146 [m    [00;34m# echo "remainder $@"[m
+[00;30m 1147 [m    [00;34m# return 0[m
+[00;30m 1148 [m
+[00;30m 1149 [m    [00;32meval[m [00;31m"typeset envname=\$[m[00;35m$#[m[00;31m"[m
+[00;30m 1150 [m    virtualenvwrapper_verify_project_home || [00;32mreturn[m [00;34m1[m
+[00;30m 1151 [m
+[00;30m 1152 [m    [00;33mif[m [00;00m[[m [00;32m-d[m [00;31m"[m[00;35m$PROJECT_HOME[m[00;31m/[m[00;35m$envname[m[00;31m"[m [00;32m-a[m [00;32m$force[m [00;32m-eq[m [00;34m0[m [00;00m][m
+[00;30m 1153 [m    [00;33mthen[m
+[00;30m 1154 [m        [00;32mecho[m [00;31m"Project[m [00;35m$envname[m [00;31malready exists."[m [00;00m>&[m[00;34m2[m
+[00;30m 1155 [m        [00;32mreturn[m [00;34m1[m
+[00;30m 1156 [m    [00;33mfi[m
+[00;30m 1157 [m
+[00;30m 1158 [m    mkvirtualenv [00;31m"$@"[m || [00;32mreturn[m [00;34m1[m
+[00;30m 1159 [m
+[00;30m 1160 [m    virtualenvwrapper_cd [00;31m"[m[00;35m$PROJECT_HOME[m[00;31m"[m
+[00;30m 1161 [m
+[00;30m 1162 [m    virtualenvwrapper_run_hook [00;31m"project.pre_mkproject"[m [00;32m$envname[m
+[00;30m 1163 [m
+[00;30m 1164 [m    [00;32mecho[m [00;31m"Creating[m [00;35m$PROJECT_HOME[m[00;31m/[m[00;35m$envname[m[00;31m"[m
+[00;30m 1165 [m    mkdir [00;32m-p[m [00;31m"[m[00;35m$PROJECT_HOME[m[00;31m/[m[00;35m$envname[m[00;31m"[m
+[00;30m 1166 [m    setvirtualenvproject [00;31m"[m[00;35m$VIRTUAL_ENV[m[00;31m"[m [00;31m"[m[00;35m$PROJECT_HOME[m[00;31m/[m[00;35m$envname[m[00;31m"[m
+[00;30m 1167 [m
+[00;30m 1168 [m    virtualenvwrapper_cd [00;31m"[m[00;35m$PROJECT_HOME[m[00;31m/[m[00;35m$envname[m[00;31m"[m
+[00;30m 1169 [m
+[00;30m 1170 [m    [00;33mfor[m t [00;33min[m [00;32m$templates[m
+[00;30m 1171 [m    [00;33mdo[m
+[00;30m 1172 [m        [00;32mecho[m
+[00;30m 1173 [m        [00;32mecho[m [00;31m"Applying template[m [00;35m$t[m[00;31m"[m
+[00;30m 1174 [m        [00;34m# For some reason zsh insists on prefixing the template[m
+[00;30m 1175 [m        [00;34m# names with a space, so strip them out before passing[m
+[00;30m 1176 [m        [00;34m# the value to the hook loader.[m
+[00;30m 1177 [m        virtualenvwrapper_run_hook [00;32m--name[m $[00;00m([m[00;32mecho[m [00;32m$t[m | [00;32msed[m [00;31m's/^ //'[m[00;00m)[m [00;31m"project.template"[m [00;31m"[m[00;35m$envname[m[00;31m"[m [00;31m"[m[00;35m$PROJECT_HOME[m[00;31m/[m[00;35m$envname[m[00;31m"[m
+[00;30m 1178 [m    [00;33mdone[m
+[00;30m 1179 [m
+[00;30m 1180 [m    virtualenvwrapper_run_hook [00;31m"project.post_mkproject"[m
+[00;30m 1181 [m[00;00m}[m
+[00;30m 1182 [m
+[00;30m 1183 [m[00;34m#:help:cdproject: change directory to the active project[m
+[00;30m 1184 [m[00;33mfunction[m cdproject [00;00m{[m
+[00;30m 1185 [m    virtualenvwrapper_verify_workon_home || [00;32mreturn[m [00;34m1[m
+[00;30m 1186 [m    virtualenvwrapper_verify_active_environment || [00;32mreturn[m [00;34m1[m
+[00;30m 1187 [m    [00;33mif[m [00;00m[[m [00;32m-f[m [00;31m"[m[00;35m$VIRTUAL_ENV[m[00;31m/[m[00;35m$VIRTUALENVWRAPPER_PROJECT_FILENAME[m[00;31m"[m [00;00m][m
+[00;30m 1188 [m    [00;33mthen[m
+[00;30m 1189 [m        typeset project_dir[00;00m=[m[00;31m"$(cat "[m[00;32m$VIRTUAL_ENV[m[00;00m/[m[00;32m$VIRTUALENVWRAPPER_PROJECT_FILENAME[m[00;31m")"[m
+[00;30m 1190 [m        [00;33mif[m [00;00m[ ![m [00;32m-z[m [00;31m"[m[00;35m$project_dir[m[00;31m"[m [00;00m][m
+[00;30m 1191 [m        [00;33mthen[m
+[00;30m 1192 [m            virtualenvwrapper_cd [00;31m"[m[00;35m$project_dir[m[00;31m"[m
+[00;30m 1193 [m        [00;33melse[m
+[00;30m 1194 [m            [00;32mecho[m [00;31m"Project directory[m [00;35m$project_dir[m [00;31mdoes not exist"[m [00;34m1[m[00;00m>&[m[00;34m2[m
+[00;30m 1195 [m            [00;32mreturn[m [00;34m1[m
+[00;30m 1196 [m        [00;33mfi[m
+[00;30m 1197 [m    [00;33melse[m
+[00;30m 1198 [m        [00;32mecho[m [00;31m"No project set in[m [00;35m$VIRTUAL_ENV[m[00;31m/[m[00;35m$VIRTUALENVWRAPPER_PROJECT_FILENAME[m[00;31m"[m [00;34m1[m[00;00m>&[m[00;34m2[m
+[00;30m 1199 [m        [00;32mreturn[m [00;34m1[m
+[00;30m 1200 [m    [00;33mfi[m
+[00;30m 1201 [m    [00;32mreturn[m [00;34m0[m
+[00;30m 1202 [m[00;00m}[m
+[00;30m 1203 [m
+[00;30m 1204 [m[00;34m#[m
+[00;30m 1205 [m[00;34m# Temporary virtualenv[m
+[00;30m 1206 [m[00;34m#[m
+[00;30m 1207 [m[00;34m# Originally part of virtualenvwrapper.tmpenv plugin[m
+[00;30m 1208 [m[00;34m#[m
+[00;30m 1209 [m[00;34m#:help:mktmpenv: create a temporary virtualenv[m
+[00;30m 1210 [m[00;33mfunction[m mktmpenv [00;00m{[m
+[00;30m 1211 [m    typeset tmpenvname
+[00;30m 1212 [m    typeset RC
+[00;30m 1213 [m    typeset [00;32m-a[m in_args
+[00;30m 1214 [m    typeset [00;32m-a[m out_args
+[00;30m 1215 [m
+[00;30m 1216 [m    in_args[00;00m=([m [00;31m"$@"[m [00;00m)[m
+[00;30m 1217 [m
+[00;30m 1218 [m    [00;33mif[m [00;00m[[m [00;32m-n[m [00;31m"[m[00;35m$ZSH_VERSION[m[00;31m"[m [00;00m][m
+[00;30m 1219 [m    [00;33mthen[m
+[00;30m 1220 [m        i[00;00m=[m[00;34m1[m
+[00;30m 1221 [m        tst[00;00m=[m[00;31m"-le"[m
+[00;30m 1222 [m    [00;33melse[m
+[00;30m 1223 [m        i[00;00m=[m[00;34m0[m
+[00;30m 1224 [m        tst[00;00m=[m[00;31m"-lt"[m
+[00;30m 1225 [m    [00;33mfi[m
+[00;30m 1226 [m    typeset cd_after_activate[00;00m=[m[00;32m$VIRTUALENVWRAPPER_WORKON_CD[m
+[00;30m 1227 [m    [00;33mwhile[m [00;00m[[m [00;32m$i $tst $#[m [00;00m][m
+[00;30m 1228 [m    [00;33mdo[m
+[00;30m 1229 [m        a[00;00m=[m[00;31m"[m[00;35m${in_args[$i]}[m[00;31m"[m
+[00;30m 1230 [m        [00;33mcase[m [00;31m"[m[00;35m$a[m[00;31m"[m [00;33min[m
+[00;30m 1231 [m            [00;32m-n[m|[00;32m--no-cd[m[00;00m)[m
+[00;30m 1232 [m                cd_after_activate[00;00m=[m[00;34m0[m[00;00m;;[m
+[00;30m 1233 [m            [00;32m-c[m|[00;32m--cd[m[00;00m)[m
+[00;30m 1234 [m                cd_after_activate[00;00m=[m[00;34m1[m[00;00m;;[m
+[00;30m 1235 [m            [00;00m*)[m
+[00;30m 1236 [m                [00;33mif[m [00;00m[[m [00;32m${#out_args}[m [00;32m-gt[m [00;34m0[m [00;00m][m
+[00;30m 1237 [m                [00;33mthen[m
+[00;30m 1238 [m                    out_args[00;00m=([m [00;31m"[m[00;35m${out_args[@]-}[m[00;31m"[m [00;31m"[m[00;35m$a[m[00;31m"[m [00;00m)[m
+[00;30m 1239 [m                [00;33melse[m
+[00;30m 1240 [m                    out_args[00;00m=([m [00;31m"[m[00;35m$a[m[00;31m"[m [00;00m)[m
+[00;30m 1241 [m                [00;33mfi[m[00;00m;;[m
+[00;30m 1242 [m        [00;33mesac[m
+[00;30m 1243 [m        i[00;00m=[m$[00;00m(([m [00;32m$i[m [00;00m+[m [00;34m1[m [00;00m))[m
+[00;30m 1244 [m    [00;33mdone[m
+[00;30m 1245 [m
+[00;30m 1246 [m    [00;32mset --[m [00;31m"[m[00;35m${out_args[@]}[m[00;31m"[m
+[00;30m 1247 [m
+[00;30m 1248 [m    [00;34m# Generate a unique temporary name[m
+[00;30m 1249 [m    tmpenvname[00;00m=[m$[00;00m([m[00;31m"[m[00;35m$VIRTUALENVWRAPPER_PYTHON[m[00;31m"[m [00;32m-c[m [00;31m'import uuid,sys; sys.stdout.write(uuid.uuid4()+"[m[00;35m\n[m[00;31m")'[m [00;34m2[m[00;00m>/[mdev[00;00m/[mnull[00;00m)[m
+[00;30m 1250 [m    [00;33mif[m [00;00m[[m [00;32m-z[m [00;31m"[m[00;35m$tmpenvname[m[00;31m"[m [00;00m][m
+[00;30m 1251 [m    [00;33mthen[m
+[00;30m 1252 [m        [00;34m# This python does not support uuid[m
+[00;30m 1253 [m        tmpenvname[00;00m=[m$[00;00m([m[00;31m"[m[00;35m$VIRTUALENVWRAPPER_PYTHON[m[00;31m"[m [00;32m-c[m [00;31m'import random,sys; sys.stdout.write(hex(random.getrandbits(64))[2:-1]+"[m[00;35m\n[m[00;31m")'[m [00;34m2[m[00;00m>/[mdev[00;00m/[mnull[00;00m)[m
+[00;30m 1254 [m    [00;33mfi[m
+[00;30m 1255 [m    tmpenvname[00;00m=[m[00;31m"tmp-[m[00;35m$tmpenvname[m[00;31m"[m
+[00;30m 1256 [m
+[00;30m 1257 [m    [00;34m# Create the environment[m
+[00;30m 1258 [m    mkvirtualenv [00;31m"$@"[m [00;31m"[m[00;35m$tmpenvname[m[00;31m"[m
+[00;30m 1259 [m    RC[00;00m=[m$?
+[00;30m 1260 [m    [00;33mif[m [00;00m[[m [00;32m$RC[m [00;32m-ne[m [00;34m0[m [00;00m][m
+[00;30m 1261 [m    [00;33mthen[m
+[00;30m 1262 [m        [00;32mreturn[m [00;32m$RC[m
+[00;30m 1263 [m    [00;33mfi[m
+[00;30m 1264 [m
+[00;30m 1265 [m    [00;34m# Change working directory[m
+[00;30m 1266 [m    [00;00m[[m [00;31m"[m[00;35m$cd_after_activate[m[00;31m"[m [00;00m=[m [00;31m"1"[m [00;00m] &&[m cdvirtualenv
+[00;30m 1267 [m
+[00;30m 1268 [m    [00;34m# Create the tmpenv marker file[m
+[00;30m 1269 [m    [00;32mecho[m [00;31m"This is a temporary environment. It will be deleted when you run 'deactivate'."[m | [00;32mtee[m [00;31m"[m[00;35m$VIRTUAL_ENV[m[00;31m/README.tmpenv"[m
+[00;30m 1270 [m
+[00;30m 1271 [m    [00;34m# Update the postdeactivate script[m
+[00;30m 1272 [m    [00;32mcat[m [00;00m- >>[m [00;31m"[m[00;35m$VIRTUAL_ENV[m[00;31m/[m[00;35m$VIRTUALENVWRAPPER_ENV_BIN_DIR[m[00;31m/postdeactivate"[m [00;31m<<EOF[m
+[00;30m 1273 [m[00;31mif [ -f "[m[00;35m$VIRTUAL_ENV[m[00;31m/README.tmpenv" ][m
+[00;30m 1274 [m[00;31mthen[m
+[00;30m 1275 [m[00;31m    echo "Removing temporary environment:" $(basename "[m[00;35m$VIRTUAL_ENV[m[00;31m")[m
+[00;30m 1276 [m[00;31m    rmvirtualenv $(basename "[m[00;35m$VIRTUAL_ENV[m[00;31m")[m
+[00;30m 1277 [m[00;31mfi[m
+[00;30m 1278 [m[00;31mEOF[m
+[00;30m 1279 [m[00;00m}[m
+[00;30m 1280 [m
+[00;30m 1281 [m[00;34m#[m
+[00;30m 1282 [m[00;34m# Remove all installed packages from the env[m
+[00;30m 1283 [m[00;34m#[m
+[00;30m 1284 [m[00;34m#:help:wipeenv: remove all packages installed in the current virtualenv[m
+[00;30m 1285 [m[00;33mfunction[m wipeenv [00;00m{[m
+[00;30m 1286 [m    virtualenvwrapper_verify_workon_home || [00;32mreturn[m [00;34m1[m
+[00;30m 1287 [m    virtualenvwrapper_verify_active_environment || [00;32mreturn[m [00;34m1[m
+[00;30m 1288 [m
+[00;30m 1289 [m    typeset req_file[00;00m=[m[00;31m"$(virtualenvwrapper_tempfile "[mrequirements.txt[00;31m")"[m
+[00;30m 1290 [m    pip freeze | [00;32megrep[m [00;32m-v[m [00;31m'(distribute|wsgiref|appdirs|packaging|pyparsing|six)'[m [00;00m>[m [00;31m"[m[00;35m$req_file[m[00;31m"[m
+[00;30m 1291 [m    [00;33mif[m [00;00m[[m [00;32m-n[m [00;31m"$(cat "[m[00;32m$req_file[m[00;31m")"[m [00;00m][m
+[00;30m 1292 [m    [00;33mthen[m
+[00;30m 1293 [m        [00;32mecho[m [00;31m"Uninstalling packages:"[m
+[00;30m 1294 [m        [00;32mcat[m [00;31m"[m[00;35m$req_file[m[00;31m"[m
+[00;30m 1295 [m        [00;32mecho[m
+[00;30m 1296 [m        pip uninstall [00;32m-y[m $[00;00m([m[00;32mcat[m [00;31m"[m[00;35m$req_file[m[00;31m"[m | [00;32mgrep[m [00;32m-v[m [00;31m'^-f'[m | [00;32msed[m [00;31m's/>/=/g'[m | cut [00;32m-f1 -d[m[00;00m=)[m
+[00;30m 1297 [m    [00;33melse[m
+[00;30m 1298 [m        [00;32mecho[m [00;31m"Nothing to remove."[m
+[00;30m 1299 [m    [00;33mfi[m
+[00;30m 1300 [m    [00;32mrm[m [00;32m-f[m [00;31m"[m[00;35m$req_file[m[00;31m"[m
+[00;30m 1301 [m[00;00m}[m
+[00;30m 1302 [m
+[00;30m 1303 [m[00;34m#[m
+[00;30m 1304 [m[00;34m# Run a command in each virtualenv[m
+[00;30m 1305 [m[00;34m#[m
+[00;30m 1306 [m[00;34m#:help:allvirtualenv: run a command in all virtualenvs[m
+[00;30m 1307 [m[00;33mfunction[m allvirtualenv [00;00m{[m
+[00;30m 1308 [m    virtualenvwrapper_verify_workon_home || [00;32mreturn[m [00;34m1[m
+[00;30m 1309 [m    typeset d
+[00;30m 1310 [m
+[00;30m 1311 [m    [00;34m# The IFS default of breaking on whitespace causes issues if there[m
+[00;30m 1312 [m    [00;34m# are spaces in the env_name, so change it.[m
+[00;30m 1313 [m    IFS[00;00m=[m[00;31m'%'[m
+[00;30m 1314 [m    virtualenvwrapper_show_workon_options | [00;33mwhile[m [00;32mread[m d
+[00;30m 1315 [m    [00;33mdo[m
+[00;30m 1316 [m        [00;00m[ ![m [00;32m-d[m [00;31m"[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$d[m[00;31m"[m [00;00m] &&[m [00;32mcontinue[m
+[00;30m 1317 [m        [00;32mecho[m [00;31m"[m[00;35m$d[m[00;31m"[m
+[00;30m 1318 [m        [00;32mecho[m [00;31m"[m[00;35m$d[m[00;31m"[m | [00;32msed[m [00;31m's/./=/g'[m
+[00;30m 1319 [m        [00;34m# Activate the environment, but not with workon[m
+[00;30m 1320 [m        [00;34m# because we don't want to trigger any hooks.[m
+[00;30m 1321 [m        [00;00m([m[00;32msource[m [00;31m"[m[00;35m$WORKON_HOME[m[00;31m/[m[00;35m$d[m[00;31m/[m[00;35m$VIRTUALENVWRAPPER_ENV_BIN_DIR[m[00;31m/activate"[m[00;00m;[m
+[00;30m 1322 [m            virtualenvwrapper_cd [00;31m"[m[00;35m$VIRTUAL_ENV[m[00;31m"[m[00;00m;[m
+[00;30m 1323 [m            [00;31m"$@"[m[00;00m)[m
+[00;30m 1324 [m        [00;32mecho[m
+[00;30m 1325 [m    [00;33mdone[m
+[00;30m 1326 [m    [00;32munset[m IFS
+[00;30m 1327 [m[00;00m}[m
+[00;30m 1328 [m
+[00;30m 1329 [m[00;34m#:help:virtualenvwrapper: show this help message[m
+[00;30m 1330 [m[00;33mfunction[m virtualenvwrapper [00;00m{[m
+[00;30m 1331 [m	[00;32mcat[m [00;31m<<EOF[m
+[00;30m 1332 [m[00;31m[m
+[00;30m 1333 [m[00;31mvirtualenvwrapper is a set of extensions to Ian Bicking's virtualenv[m
+[00;30m 1334 [m[00;31mtool.  The extensions include wrappers for creating and deleting[m
+[00;30m 1335 [m[00;31mvirtual environments and otherwise managing your development workflow,[m
+[00;30m 1336 [m[00;31mmaking it easier to work on more than one project at a time without[m
+[00;30m 1337 [m[00;31mintroducing conflicts in their dependencies.[m
+[00;30m 1338 [m[00;31m[m
+[00;30m 1339 [m[00;31mFor more information please refer to the documentation:[m
+[00;30m 1340 [m[00;31m[m
+[00;30m 1341 [m[00;31m    http://virtualenvwrapper.readthedocs.org/en/latest/command_ref.html[m
+[00;30m 1342 [m[00;31m[m
+[00;30m 1343 [m[00;31mCommands available:[m
+[00;30m 1344 [m[00;31m[m
+[00;30m 1345 [m[00;31mEOF[m
+[00;30m 1346 [m
+[00;30m 1347 [m    typeset helpmarker[00;00m=[m[00;31m"#:help:"[m
+[00;30m 1348 [m    [00;32mcat[m  [00;31m"[m[00;35m$VIRTUALENVWRAPPER_SCRIPT[m[00;31m"[m \
+[00;30m 1349 [m        | [00;32mgrep[m [00;31m"^[m[00;35m$helpmarker[m[00;31m"[m \
+[00;30m 1350 [m        | [00;32msed[m [00;32m-e[m [00;31m"s/^[m[00;35m$helpmarker[m[00;31m/  /g"[m \
+[00;30m 1351 [m        | [00;32msort[m \
+[00;30m 1352 [m        | [00;32msed[m [00;32m-e[m [00;31m's/$/[m[00;35m\'[m[00;31m$'[m[00;35m\n[m[00;00m/[mg[00;31m'[m
+[00;30m 1353 [m[00;31m}[m
+[00;30m 1354 [m[00;31m[m
+[00;30m 1355 [m[00;31m#[m
+[00;30m 1356 [m[00;31m# Invoke the initialization functions[m
+[00;30m 1357 [m[00;31m#[m
+[00;30m 1358 [m[00;31mvirtualenvwrapper_initialize[m

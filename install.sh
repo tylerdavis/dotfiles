@@ -13,6 +13,13 @@ brew install zsh
 ### zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
+## Install RVM
+curl -sSL https://get.rvm.io | bash -s stable --ruby
+source ~/.rvm/scripts/rvm
+
+## Install NVM
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.6/install.sh | bash
+
 check_and_link () {
   if [ ! -f ~/$1 ]; then
     ln -s $PWD/$1 ~/$1
@@ -24,6 +31,7 @@ check_and_link () {
 check_and_link .zshrc
 check_and_link .atlassian.zsh
 check_and_link .soundviz.zsh
+check_and_link .deployhub.zsh
 check_and_link .gitconfig
 check_and_link .gitignore
 check_and_link .tmux.conf
