@@ -47,8 +47,7 @@ unset LD_LIBRARY_PATH
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-fpath=(/usr/local/share/zsh/site-functions /Users/tylerdavis/.oh-my-zsh/plugins/git /Users/tylerdavis/.oh-my-zsh/functions /Users/tylerdavis/.oh-my-zsh/completions /usr/local/share/zsh/site-functions /usr/share/zsh/site-functions /usr/share/zsh/5.3/functions)
-fpath=(/usr/local/share/zsh-completions $fpath)
+fpath=(/usr/local/share/zsh/site-functions /usr/local/share/zsh-completions /Users/tylerdavis/.oh-my-zsh/plugins/git /Users/tylerdavis/.oh-my-zsh/functions /Users/tylerdavis/.oh-my-zsh/completions /usr/share/zsh/site-functions /usr/share/zsh/5.3/functions)
 
 autoload -U compinit && compinit
 
