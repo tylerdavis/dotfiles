@@ -16,7 +16,7 @@ ZSH_THEME="robbyrussell"
 [ -f ~/.soundviz.zsh ] && source ~/.soundviz.zsh
 [ -f ~/.deployhub.zsh ] && source ~/.deployhub.zsh
 
-plugins=(aws git osx zsh-syntax-highlighting terraform)
+plugins=(git osx zsh-syntax-highlighting terraform zsh-completions fasd)
 
 source $ZSH/oh-my-zsh.sh
 

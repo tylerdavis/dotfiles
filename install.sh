@@ -4,7 +4,7 @@ if ! [ -x "$(command -v brew)" ]; then
 fi
 
 ## Install zsh
-brew install zsh
+brew install zsh fasd
 
 ## Install oh-my-zsh
 [ -d "~/.oh-my-zsh" ] && sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
