@@ -25,6 +25,11 @@ call plug#begin('~/.local/share/nvim/plugged')
     nnoremap <A-[> :bprev<CR>
   " }}}
 
+  Plug 'sjl/gundo.vim'
+  " {{{
+    nnoremap <silent> <Leader>gu :GundoToggle<CR>
+  " }}}
+
   Plug 'terryma/vim-multiple-cursors'
 
   Plug 'sbdchd/neoformat'
@@ -43,7 +48,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 
   Plug 'othree/javascript-libraries-syntax.vim'
   " {{{
-  let g:user_javascript_libs = 'uderscore,jquery,react'
+    let g:user_javascript_libs = 'underscore,jquery,react'
   " }}}
   
   Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'javascript.jsx'] }
@@ -74,12 +79,6 @@ call plug#begin('~/.local/share/nvim/plugged')
     let g:gitgutter_eager = 1
     let g:gitgutter_sign_removed = '–'
     let g:gitgutter_diff_args = '--ignore-space-at-eol'
-    nmap <silent> ]h :GitGutterNextHunk<CR>
-    nmap <silent> [h :GitGutterPrevHunk<CR>
-    nnoremap <silent> <Leader>gu :GitGutterRevertHunk<CR>
-    nnoremap <silent> <Leader>gp :GitGutterPreviewHunk<CR><c-w>j
-    nnoremap cog :GitGutterToggle<CR>
-    nnoremap <Leader>gt :GitGutterAll<CR>
   " }}}
   
   Plug 'roxma/nvim-completion-manager', { 'do' : 'pip3 install neovim psutil setproctitle' }
