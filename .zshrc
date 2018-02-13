@@ -30,6 +30,7 @@ alias fsw='foreman start -f Procfile.dev -c web=1,webpack=1,worker=1,worker_nm=1
 alias tails='tail'
 alias cat=pcat
 alias rg="rg -g '!*.bundle.*.js' -g '!vendor' -p"
+alias notes="vim ~/Dropbox/Notes"
 
 # Ruby environment loader
 export BUNDLER_EDITOR="nvim"
