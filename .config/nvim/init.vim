@@ -80,6 +80,15 @@ call plug#begin('~/.local/share/nvim/plugged')
     let g:gitgutter_sign_removed = '–'
     let g:gitgutter_diff_args = '--ignore-space-at-eol'
   " }}}
+
+  Plug 'mattn/webapi-vim'
+  Plug 'mattn/gist-vim'
+  " {{{
+    let g:gist_clip_command = 'pbcopy'
+    let g:gist_detect_filetype = 1
+    let g:gist_open_browser_after_post = 1
+    let g:gist_post_private = 1
+  " }}}
   
   Plug 'roxma/nvim-completion-manager', { 'do' : 'pip3 install neovim psutil setproctitle' }
   " {{{
