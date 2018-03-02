@@ -55,6 +55,12 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'mxw/vim-jsx', { 'for': ['javascript', 'javascript.jsx'] }
   Plug 'leafgarland/typescript-vim'
 
+  Plug 'cespare/vim-toml'
+  Plug 'rust-lang/rust.vim'
+  " {{{
+    let g:rustfmt_autosave = 1
+  " }}}
+
   Plug 'hashivim/vim-terraform'
   " {{{
     let g:terraform_align=1
