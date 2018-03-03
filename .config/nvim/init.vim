@@ -45,6 +45,9 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'tpope/vim-endwise'
 
   Plug 'tpope/vim-vinegar'
+  " {{{
+    autocmd FileType netrw setl bufhidden=delete
+  " }}}
 
   Plug 'othree/javascript-libraries-syntax.vim'
   " {{{
