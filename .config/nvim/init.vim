@@ -18,11 +18,20 @@ call plug#begin('~/.local/share/nvim/plugged')
   " }}}
 
   Plug 'vim-airline/vim-airline'
-  Plug 'ap/vim-buftabline'
   " {{{
-    set hidden
-    nnoremap <A-]> :bnext<CR>
-    nnoremap <A-[> :bprev<CR>
+    let g:airline#extensions#tabline#enabled = 1
+    let g:airline#extensions#tabline#buffer_idx_mode = 1
+    nmap <leader>1 <Plug>AirlineSelectTab1
+    nmap <leader>2 <Plug>AirlineSelectTab2
+    nmap <leader>3 <Plug>AirlineSelectTab3
+    nmap <leader>4 <Plug>AirlineSelectTab4
+    nmap <leader>5 <Plug>AirlineSelectTab5
+    nmap <leader>6 <Plug>AirlineSelectTab6
+    nmap <leader>7 <Plug>AirlineSelectTab7
+    nmap <leader>8 <Plug>AirlineSelectTab8
+    nmap <leader>9 <Plug>AirlineSelectTab9
+    nmap <A-]> <Plug>AirlineSelectPrevTab
+    nmap <A-[> <Plug>AirlineSelectNextTab
   " }}}
 
   Plug 'sjl/gundo.vim'
@@ -110,18 +119,6 @@ call plug#end()
 
 let g:python_host_prog = '/usr/local/bin/python2'
 let g:python3_host_prog = '/usr/local/bin/python3'
-
-" Run a specific test in the terminal
-function RailsTest()
-  let file_path = expand('%:p')
-  let test_line = search('\Wit\W.*\Wdo', 'bcn')
-  let test_command = "bin/rails test " . file_path . ":" . test_line
-  split
-  enew
-  call termopen(test_command)
-endfunction
-
-nnoremap <silent> <Leader>rt call RailsTest()
 
 " Save all files on loss of focus
 :au FocusLost * silent! wa
