@@ -55,6 +55,9 @@ brew install neovim
 ## Make sure the Neovim config directory is there
 mkdir -p ~/.config/nvim
 
+## Make sure the vim undo directory is created
+mkdir -f ~/.vim/undodir
+
 ## Symlink the init file
 ln -s $PWD/.config/nvim/init.vim ~/.config/nvim/init.vim
 

@@ -36,6 +36,8 @@ call plug#begin('~/.local/share/nvim/plugged')
 
   Plug 'sjl/gundo.vim'
   " {{{
+    set undodir=~/.vim/undodir
+    set undofile
     nnoremap <silent> <Leader>gu :GundoToggle<CR>
   " }}}
 
@@ -58,9 +60,10 @@ call plug#begin('~/.local/share/nvim/plugged')
 
   Plug 'tpope/vim-endwise'
 
-  Plug 'tpope/vim-vinegar'
+  Plug 'scrooloose/nerdtree'
   " {{{
-    autocmd FileType netrw setl bufhidden=delete
+    autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+    nnoremap - :NERDTreeToggle<CR>
   " }}}
 
   Plug 'othree/javascript-libraries-syntax.vim'
