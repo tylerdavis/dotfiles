@@ -51,6 +51,11 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'tpope/vim-bundler'
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-commentary'
+  " {{{
+    vmap <leader>c :Commentary<CR>
+    nmap <leader>c :Commentary<CR>
+  " }}}
+
   Plug 'tpope/vim-endwise'
 
   Plug 'tpope/vim-vinegar'
