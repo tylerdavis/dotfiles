@@ -6,6 +6,9 @@ export VISUAL=nvim
 export EDITOR="$VISUAL"
 export REACT_EDITOR="$VISUAL"
 
+# Ruby environment loader
+export BUNDLER_EDITOR="nvim"
+export DEPLOY_USER=`whoami`
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
@@ -20,21 +23,14 @@ plugins=(git osx zsh-syntax-highlighting terraform zsh-completions fasd)
 
 source $ZSH/oh-my-zsh.sh
 
+# StatusPage specific stuff
+alias tails='tail'
 function pcat() {
   highlight -O ansi --line-numbers --force $@ || cat $@
 }
-
-# StatusPage specific stuff
-alias fs='foreman start -f Procfile.dev -c web=1,webpack=1'
-alias fsw='foreman start -f Procfile.dev -c web=1,webpack=1,worker=1,worker_nm=1,worker_other=1'
-alias tails='tail'
 alias cat=pcat
 alias rg="rg -g '!*.bundle.*.js' -g '!vendor' -p"
 alias notes="vim ~/Dropbox/Notes"
-
-# Ruby environment loader
-export BUNDLER_EDITOR="nvim"
-export DEPLOY_USER=`whoami`
 
 # nvm loader
 . ~/.nvm/nvm.sh

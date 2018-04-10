@@ -128,8 +128,8 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 call plug#end()
 
-let g:python_host_prog = '/usr/local/bin/python2'
-let g:python3_host_prog = '/usr/local/bin/python3'
+" let g:python_host_prog = '/usr/local/bin/python'
+" let g:python3_host_prog = '/usr/local/bin/python3'
 
 " Save all files on loss of focus
 :au FocusLost * silent! wa
@@ -261,6 +261,3 @@ nnoremap <silent> <C-A-k> <C-w>k
 " Close current window
 nnoremap <silent> <C-A-c> :q<CR>
 
-
-" Toggle between normal and relative numbering.
-nnoremap <leader>r :call NumberToggle()<CR>
