@@ -75,12 +75,33 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'mxw/vim-jsx', { 'for': ['javascript', 'javascript.jsx'] }
   Plug 'leafgarland/typescript-vim'
 
+  " RUST
   Plug 'cespare/vim-toml'
   Plug 'rust-lang/rust.vim'
   " {{{
     let g:rustfmt_autosave = 1
+    let g:rustfmt_command = "cargo fmt -- "
+    au FileType rust nmap <C-]> <Plug>(rust-def)
+    au FileType rust nmap gs <Plug>(rust-def-split)
+    au FileType rust nmap gx <Plug>(rust-def-vertical)
+    au FileType rust nmap <leader>gd <Plug>(rust-doc)
+  " }}}
+  Plug 'racer-rust/vim-racer'
+
+  Plug 'vim-syntastic/syntastic'
+  " {{{
+    set statusline+=%#warningmsg#
+    set statusline+=%{SyntasticStatuslineFlag()}
+    set statusline+=%*
+
+    let g:syntastic_always_populate_loc_list = 1
+    let g:syntastic_auto_loc_list = 1
+    let g:syntastic_check_on_open = 1
+    let g:syntastic_check_on_wq = 0
+    " let g:syntastic_rust_checkers = ['cargo']
   " }}}
 
+  " TERRAFORM
   Plug 'hashivim/vim-terraform'
   " {{{
     let g:terraform_align=1
@@ -133,6 +154,9 @@ let g:python3_host_prog = '/usr/local/bin/python3'
 
 " Save all files on loss of focus
 :au FocusLost * silent! wa
+
+" Always open files in a new tab
+" :au BufAdd,BufNewFile * nested tab sball
 
 " Setup
 syntax enable                     " Enable syntax highlighting
