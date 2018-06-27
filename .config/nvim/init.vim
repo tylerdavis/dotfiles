@@ -192,7 +192,6 @@ set mouse=a mousemodel=popup " Click to bring cursor to mouse position
 
 set noerrorbells        " No beeps.
 set modeline            " Enable modeline.
-" set esckeys             " Cursor keys in insert mode.
 set linespace=0         " Set line-spacing to minimum.
 set nojoinspaces        " Prevents inserting two spaces after punctuation on a join (J)
 
