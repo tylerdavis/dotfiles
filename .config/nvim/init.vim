@@ -3,6 +3,7 @@ let mapleader="\<SPACE>"
 " Plugins
 call plug#begin('~/.local/share/nvim/plugged')
   Plug 'mhartington/oceanic-next'
+  Plug 'dracula/vim'
 
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
   Plug 'junegunn/fzf.vim'
@@ -211,7 +212,6 @@ if !&sidescrolloff
 endif
 set nostartofline       " Do not jump to first character with page commands.
 
-
 set hlsearch            " highlight search results
 set incsearch           " incremental search
 set showmatch
@@ -238,26 +238,14 @@ augroup vimrcEx
         \ endif
 augroup END
 
-" Relative numbering
-function! NumberToggle()
-  if(&relativenumber == 1)
-    set nornu
-    set number
-  else
-    set rnu
-  endif
-endfunc
-
-" Colors
-if (has("termguicolors"))
- set termguicolors
-endif
-
 " Theme
 syntax enable
-colorscheme OceanicNext
-let g:airline_theme='oceanicnext'
+set t_Co=256
+colorscheme dracula
+" let g:airline_theme='dracula'
 
+" Copy Pasting.....
+nnoremap Y "+
 
 """""""""""""""
 " Leader Maps "
