@@ -2,15 +2,16 @@
 set -e
 
 export WORKING_DIRECTORY=$PWD
+export INSTALL_DIRECTORY=$WORKING_DIRECTORY/install
 
 # Install ZSH and oh-my-zsh
-./zsh.sh
+source $INSTALL_DIRECTORY/zsh.sh
 
 # Install RVM if it's not installed
-[ ! -d ~/.rvm ] && ./rvm.sh
+[ ! -d ~/.rvm ] && source $INSTALL_DIRECTORY/rvm.sh
 
 # Installs or updates NVM
-./nvm.sh
+source $INSTALL_DIRECTORY/nvm.sh
 
 ###################
 ### Base Config ###
@@ -31,13 +32,13 @@ check_and_link .gitignore
 check_and_link .tmux.conf
 
 # Install fzf if it's not installed already
-./fzf.sh
+source $INSTALL_DIRECTORY/fzf.sh
 
 # Install Ripgrep
-./ripgrep.sh
+source $INSTALL_DIRECTORY/ripgrep.sh
 
 # Install Neovim
-./neovim.sh
+source $INSTALL_DIRECTORY/neovim.sh
 
 # Python deps - also some neovim stuff
 pip3 install --user neovim jedi psutil setproctitle
