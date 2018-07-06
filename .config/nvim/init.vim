@@ -4,6 +4,9 @@ let mapleader="\<SPACE>"
 call plug#begin('~/.local/share/nvim/plugged')
   Plug 'mhartington/oceanic-next'
   Plug 'dracula/vim'
+  Plug 'altercation/vim-colors-solarized'
+  Plug 'joshdick/onedark.vim'
+  Plug 'sheerun/vim-polyglot'
 
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
   Plug 'junegunn/fzf.vim'
@@ -19,6 +22,7 @@ call plug#begin('~/.local/share/nvim/plugged')
   " }}}
 
   Plug 'vim-airline/vim-airline'
+  Plug 'vim-airline/vim-airline-themes'
   " {{{
     let g:airline#extensions#tabline#enabled = 1
     let g:airline#extensions#tabline#buffer_idx_mode = 1
@@ -239,10 +243,16 @@ augroup vimrcEx
 augroup END
 
 " Theme
+let g:term='screen-256color'
 syntax enable
-set t_Co=256
-colorscheme dracula
-" let g:airline_theme='dracula'
+" let g:solarized_termtrans = 1
+" set background=dark
+colorscheme onedark
+" set t_Co=256
+" let g:solarized_termcolors=256
+let g:onedark_termcolors=256
+let g:airline_theme='onedark'
+let g:onedark_terminal_italics=1
 
 " Copy Pasting.....
 nnoremap Y "+
