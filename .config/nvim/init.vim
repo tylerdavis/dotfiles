@@ -245,10 +245,10 @@ augroup END
 " Theme
 let g:term='screen-256color'
 syntax enable
-" let g:solarized_termtrans = 1
+let g:solarized_termtrans = 1
 " set background=dark
 colorscheme onedark
-" set t_Co=256
+set t_Co=256
 " let g:solarized_termcolors=256
 let g:onedark_termcolors=256
 let g:airline_theme='onedark'
