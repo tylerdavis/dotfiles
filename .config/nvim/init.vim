@@ -39,6 +39,9 @@ call plug#begin('~/.local/share/nvim/plugged')
     nmap <A-[> <Plug>AirlineSelectNextTab
   " }}}
 
+  Plug 'christoomey/vim-tmux-navigator'
+  Plug 'edkolev/tmuxline.vim'
+
   Plug 'sjl/gundo.vim'
   " {{{
     set undodir=~/.vim/undodir
@@ -270,15 +273,4 @@ nnoremap <Leader>w :w<CR>
 nnoremap <Leader>- <C-w>s
 " Split the window vertically
 nnoremap <Leader>\ <C-w>v
-
-" Switch to window to the left
-nnoremap <silent> <C-A-h> <C-w>h
-" Swith to window to the right
-nnoremap <silent> <C-A-l> <C-w>l
-" Switch to window below
-nnoremap <silent> <C-A-j> <C-w>j
-" Switch to window above
-nnoremap <silent> <C-A-k> <C-w>k
-" Close current window
-nnoremap <silent> <C-A-c> :q<CR>
 

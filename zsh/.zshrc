@@ -2,7 +2,7 @@ export ZSH="/home/tyler/.oh-my-zsh"
 export PATH="$PATH:$HOME/.rvm/bin"
 export NVM_DIR="$HOME/.nvm"
 
-ZSH_THEME="robbyrussell"
+ZSH_THEME="tmd"
 HYPHEN_INSENSITIVE="true"
 
 BLUE='\033[0;34m'
@@ -22,3 +22,4 @@ alias rg="rg -g '!*.bundle.*.js' -g '!vendor' -p"
 alias docker="docker.exe"
 alias docker-compose="docker-compose.exe"
 
+bindkey -e
