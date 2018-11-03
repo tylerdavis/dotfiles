@@ -6,6 +6,7 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'dracula/vim'
   Plug 'altercation/vim-colors-solarized'
   Plug 'joshdick/onedark.vim'
+  Plug 'mhartington/oceanic-next'
   Plug 'sheerun/vim-polyglot'
 
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -205,7 +206,8 @@ set nojoinspaces        " Prevents inserting two spaces after punctuation on a j
 
 set notimeout
 set ttimeout
-set ttimeoutlen=10
+set timeoutlen=10
+set ttimeoutlen=0
 
 " More natural splits
 set splitbelow          " Horizontal split below current.
@@ -246,16 +248,19 @@ augroup vimrcEx
 augroup END
 
 " Theme
-let g:term='screen-256color'
+
 syntax enable
-let g:solarized_termtrans = 1
-" set background=dark
-colorscheme onedark
-set t_Co=256
-" let g:solarized_termcolors=256
-let g:onedark_termcolors=256
-let g:airline_theme='onedark'
-let g:onedark_terminal_italics=1
+set t_ut=
+
+if exists('$TMUX')
+  let &t_8f = "<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "<Esc>[48;2;%lu;%lu;%lum"
+endif
+
+set termguicolors
+set background=dark
+colorscheme OceanicNext
+let g:airline_theme='oceanicnext'
 
 " Copy Pasting.....
 nnoremap Y "+
