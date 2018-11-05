@@ -41,6 +41,15 @@ call plug#begin('~/.local/share/nvim/plugged')
   " }}}
 
   Plug 'christoomey/vim-tmux-navigator'
+  " {{{
+    let g:tmux_navigator_no_mappings = 1
+
+    nnoremap <silent> <M-h> :TmuxNavigateLeft<cr>
+    nnoremap <silent> <M-j> :TmuxNavigateDown<cr>
+    nnoremap <silent> <M-k> :TmuxNavigateUp<cr>
+    nnoremap <silent> <M-l> :TmuxNavigateRight<cr>
+    " nnoremap <silent> {Previous-Mapping} :TmuxNavigatePrevious<cr>
+  " }}}
   Plug 'edkolev/tmuxline.vim'
 
   Plug 'sjl/gundo.vim'
@@ -156,6 +165,9 @@ call plug#begin('~/.local/share/nvim/plugged')
     inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
   " }}}
 
+  " Toggle cursor style in different modes
+  Plug 'jszakmeister/vim-togglecursor'
+
 call plug#end()
 
 " let g:python_host_prog = '/usr/local/bin/python'
@@ -228,9 +240,6 @@ set ignorecase          " Make searching case insensitive
 set smartcase           " ... unless the query has capital letters.
 set gdefault            " Use 'g' flag by default with :s/foo/bar/.
 set magic               " Use 'magic' patterns (extended regular expressions).
-
-" Change cursor shape on mode change
-:let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
 
 set wildignore+=tmp/** " Ignore stuff that can't be opened
 set wildmenu " Enables a menu at the bottom of the vim window.
