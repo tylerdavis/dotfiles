@@ -6,6 +6,7 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'dracula/vim'
   Plug 'altercation/vim-colors-solarized'
   Plug 'joshdick/onedark.vim'
+  Plug 'mhartington/oceanic-next'
   Plug 'sheerun/vim-polyglot'
 
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -246,13 +247,11 @@ augroup vimrcEx
 augroup END
 
 " Theme
-let g:term='screen-256color'
+" let g:term='screen-256color
 syntax enable
-let g:solarized_termtrans = 1
-" set background=dark
+set termguicolors
 colorscheme onedark
-set t_Co=256
-" let g:solarized_termcolors=256
+" set t_Co=256
 let g:onedark_termcolors=256
 let g:airline_theme='onedark'
 let g:onedark_terminal_italics=1
