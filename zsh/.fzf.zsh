@@ -1,16 +1,13 @@
 # Setup fzf
 # ---------
-if [[ ! "$PATH" == */home/tyler/.fzf/bin* ]]; then
-  export PATH="$PATH:/home/tyler/.fzf/bin"
+if [[ ! "$PATH" == */Users/tmd/.fzf/bin* ]]; then
+  export PATH="$PATH:/Users/tmd/.fzf/bin"
 fi
 
 # Auto-completion
 # ---------------
-[[ $- == *i* ]] && source "/home/tyler/.fzf/shell/completion.zsh" 2> /dev/null
+[[ $- == *i* ]] && source "/Users/tmd/.fzf/shell/completion.zsh" 2> /dev/null
 
-# Key bindings
-# ------------
-source "/home/tyler/.fzf/shell/key-bindings.zsh"
 
 # Custom command
 export FZF_DEFAULT_COMMAND='fd --type f'
