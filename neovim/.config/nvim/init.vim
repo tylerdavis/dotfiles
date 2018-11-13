@@ -2,6 +2,7 @@ let mapleader="\<SPACE>"
 
 " Plugins
 call plug#begin('~/.local/share/nvim/plugged')
+  " Plug 'metalelf0/supertab'
   Plug 'mhartington/oceanic-next'
   Plug 'dracula/vim'
   Plug 'altercation/vim-colors-solarized'
@@ -41,6 +42,15 @@ call plug#begin('~/.local/share/nvim/plugged')
   " }}}
 
   Plug 'christoomey/vim-tmux-navigator'
+  " {{{
+    let g:tmux_navigator_no_mappings = 1
+
+    nnoremap <silent> <M-h> :TmuxNavigateLeft<cr>
+    nnoremap <silent> <M-j> :TmuxNavigateDown<cr>
+    nnoremap <silent> <M-k> :TmuxNavigateUp<cr>
+    nnoremap <silent> <M-l> :TmuxNavigateRight<cr>
+    " nnoremap <silent> {Previous-Mapping} :TmuxNavigatePrevious<cr>
+  " }}}
   Plug 'edkolev/tmuxline.vim'
 
   Plug 'sjl/gundo.vim'
@@ -122,9 +132,9 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'Valloric/MatchTagAlways' 
   Plug 'mattn/emmet-vim'
   " {{{
-    let g:user_emmet_install_global = 0
-    autocmd FileType html,css,jsx EmmetInstall
-    " let g:user_emmet_expandabbr_key='<tab>'
+    " let g:user_emmet_mode='a'
+    let g:user_emmet_expandabbr_key='<Tab>'
+    imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
   " }}}
 
   Plug 'airblade/vim-gitgutter'
@@ -152,20 +162,12 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'roxma/ncm-flow', {'do': 'npm i -g flow-bin'}
     Plug 'roxma/ncm-rct-complete'
     Plug 'calebeby/ncm-css'
-    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
   " }}}
 
 call plug#end()
 
-" let g:python_host_prog = '/usr/local/bin/python'
-" let g:python3_host_prog = '/usr/local/bin/python3'
-
 " Save all files on loss of focus
 :au FocusLost * silent! wa
-
-" Always open files in a new tab
-" :au BufAdd,BufNewFile * nested tab sball
 
 " Setup
 syntax enable                     " Enable syntax highlighting
