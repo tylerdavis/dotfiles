@@ -170,9 +170,6 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 call plug#end()
 
-" let g:python_host_prog = '/usr/local/bin/python'
-" let g:python3_host_prog = '/usr/local/bin/python3'
-
 " Save all files on loss of focus
 :au FocusLost * silent! wa
 
@@ -267,7 +264,7 @@ if exists('$TMUX')
 endif
 
 set termguicolors
-set background=dark
+" set background=dark
 colorscheme OceanicNext
 let g:airline_theme='oceanicnext'
 

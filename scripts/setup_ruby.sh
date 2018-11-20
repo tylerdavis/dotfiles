@@ -3,7 +3,7 @@ set -e
 
 echo "Installing RVM..."
 command curl -sSL https://rvm.io/mpapis.asc | gpg --import -
-curl -sSL https://get.rvm.io | bash -s stable --ruby
+curl -sSL https://get.rvm.io | bash -s stable --ruby=2.4.5
 
 source ~/.rvm/scripts/rvm
 
