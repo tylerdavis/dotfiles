@@ -4,10 +4,6 @@ let mapleader="\<SPACE>"
 call plug#begin('~/.local/share/nvim/plugged')
   " Plug 'metalelf0/supertab'
   Plug 'mhartington/oceanic-next'
-  Plug 'dracula/vim'
-  Plug 'altercation/vim-colors-solarized'
-  Plug 'joshdick/onedark.vim'
-  Plug 'mhartington/oceanic-next'
   Plug 'sheerun/vim-polyglot'
 
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -68,8 +64,6 @@ call plug#begin('~/.local/share/nvim/plugged')
 
   Plug 'vim-ruby/vim-ruby'
   Plug 'tpope/vim-rails'
-  Plug 'tpope/vim-rake'
-  Plug 'tpope/vim-bundler'
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-commentary'
   " {{{
@@ -94,19 +88,6 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'mxw/vim-jsx', { 'for': ['javascript', 'javascript.jsx'] }
   Plug 'leafgarland/typescript-vim'
 
-  " RUST
-  Plug 'cespare/vim-toml'
-  Plug 'rust-lang/rust.vim'
-  " {{{
-    let g:rustfmt_autosave = 1
-    let g:rustfmt_command = "cargo fmt -- "
-    au FileType rust nmap <C-]> <Plug>(rust-def)
-    au FileType rust nmap gs <Plug>(rust-def-split)
-    au FileType rust nmap gx <Plug>(rust-def-vertical)
-    au FileType rust nmap <leader>gd <Plug>(rust-doc)
-  " }}}
-  Plug 'racer-rust/vim-racer'
-
   Plug 'vim-syntastic/syntastic'
   " {{{
     set statusline+=%#warningmsg#
@@ -120,21 +101,14 @@ call plug#begin('~/.local/share/nvim/plugged')
     " let g:syntastic_rust_checkers = ['cargo']
   " }}}
 
-  " TERRAFORM
-  Plug 'hashivim/vim-terraform'
-  " {{{
-    let g:terraform_align=1
-    autocmd FileType terraform setlocal commentstring=#%s
-  " }}}
-
   Plug 'jiangmiao/auto-pairs'
   Plug 'easymotion/vim-easymotion'
   Plug 'Valloric/MatchTagAlways' 
   Plug 'mattn/emmet-vim'
   " {{{
     " let g:user_emmet_mode='a'
-    let g:user_emmet_expandabbr_key='<Tab>'
-    imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
+    " let g:user_emmet_expandabbr_key='<Tab>'
+    " imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
   " }}}
 
   Plug 'airblade/vim-gitgutter'
@@ -147,25 +121,29 @@ call plug#begin('~/.local/share/nvim/plugged')
     let g:gitgutter_diff_args = '--ignore-space-at-eol'
   " }}}
 
-  Plug 'mattn/webapi-vim'
-  Plug 'mattn/gist-vim'
-  " {{{
-    let g:gist_clip_command = 'pbcopy'
-    let g:gist_detect_filetype = 1
-    let g:gist_open_browser_after_post = 1
-    let g:gist_post_private = 1
-  " }}}
-  
-  Plug 'roxma/nvim-completion-manager', { 'do' : 'pip3 install neovim psutil setproctitle' }
-  " {{{
-    Plug 'roxma/nvim-cm-tern'
-    Plug 'roxma/ncm-flow', {'do': 'npm i -g flow-bin'}
-    Plug 'roxma/ncm-rct-complete'
-    Plug 'calebeby/ncm-css'
-  " }}}
-
   " Toggle cursor style in different modes
   Plug 'jszakmeister/vim-togglecursor'
+
+  Plug 'ncm2/ncm2'
+  " {{{
+    Plug 'roxma/nvim-yarp'
+    Plug 'ncm2/ncm2-vim'
+    Plug 'ncm2/ncm2-tern'
+    Plug 'ncm2/ncm2-bufword'
+    Plug 'ncm2/ncm2-path'
+    Plug 'ncm2/ncm2-tmux'
+    Plug 'autozimu/LanguageClient-neovim', {
+      \ 'branch': 'next',
+      \ 'do': 'bash install.sh',
+      \ }
+    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+    let g:LanguageClient_serverCommands = {
+      \ 'ruby': ['solargraph']
+      \ }
+    autocmd BufEnter * call ncm2#enable_for_buffer()
+    set completeopt=noinsert,menuone,noselect
+  " }}}
 
 call plug#end()
 
