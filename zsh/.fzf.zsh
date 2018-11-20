@@ -1,12 +1,12 @@
 # Setup fzf
 # ---------
-if [[ ! "$PATH" == */Users/tmd/.fzf/bin* ]]; then
-  export PATH="$PATH:/Users/tmd/.fzf/bin"
+if [[ ! "$PATH" == *$HOME/.fzf/bin* ]]; then
+  export PATH="$PATH:$HOME/.fzf/bin"
 fi
 
 # Auto-completion
 # ---------------
-[[ $- == *i* ]] && source "/Users/tmd/.fzf/shell/completion.zsh" 2> /dev/null
+[[ $- == *i* ]] && source "$HOME/.fzf/shell/completion.zsh" 2> /dev/null
 
 
 # Custom command
