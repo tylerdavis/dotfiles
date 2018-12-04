@@ -2,7 +2,6 @@ let mapleader="\<SPACE>"
 
 " Plugins
 call plug#begin('~/.local/share/nvim/plugged')
-  " Plug 'metalelf0/supertab'
   Plug 'mhartington/oceanic-next'
   Plug 'sheerun/vim-polyglot'
 
@@ -71,10 +70,13 @@ call plug#begin('~/.local/share/nvim/plugged')
     nmap <leader>c :Commentary<CR>
   " }}}
 
+  Plug 'tpope/vim-surround'
+
   Plug 'tpope/vim-endwise'
 
   Plug 'scrooloose/nerdtree'
   " {{{
+    Plug 'Xuyuanp/nerdtree-git-plugin'
     autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
     nnoremap - :NERDTreeToggle<CR>
   " }}}
@@ -103,6 +105,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 
   Plug 'jiangmiao/auto-pairs'
   Plug 'easymotion/vim-easymotion'
+  Plug 'justinmk/vim-sneak'
   Plug 'Valloric/MatchTagAlways' 
   Plug 'mattn/emmet-vim'
   " {{{
@@ -123,27 +126,6 @@ call plug#begin('~/.local/share/nvim/plugged')
 
   " Toggle cursor style in different modes
   Plug 'jszakmeister/vim-togglecursor'
-
-  Plug 'ncm2/ncm2'
-  " {{{
-    Plug 'roxma/nvim-yarp'
-    Plug 'ncm2/ncm2-vim'
-    Plug 'ncm2/ncm2-tern'
-    Plug 'ncm2/ncm2-bufword'
-    Plug 'ncm2/ncm2-path'
-    Plug 'ncm2/ncm2-tmux'
-    Plug 'autozimu/LanguageClient-neovim', {
-      \ 'branch': 'next',
-      \ 'do': 'bash install.sh',
-      \ }
-    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-    let g:LanguageClient_serverCommands = {
-      \ 'ruby': ['solargraph']
-      \ }
-    autocmd BufEnter * call ncm2#enable_for_buffer()
-    set completeopt=noinsert,menuone,noselect
-  " }}}
 
 call plug#end()
 
