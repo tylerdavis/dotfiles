@@ -8,4 +8,7 @@ alias sp_ctags='ctags -R --exclude=public --exclude=*.min.js --exclude=node_modu
 
 # AWS
 [ -f ~/awscli-saml-auth/zshrc_additions ] && . ~/awscli-saml-auth/zshrc_additions
+if [[ -f "${HOME}/.config/cloudtoken/bashrc_additions" ]]; then
+    source "${HOME}/.config/cloudtoken/bashrc_additions"
+fi
 alias awstoken='awstoken -u $STAFF_ID'

@@ -1,4 +1,5 @@
 export EDITOR="nvim"
+export VISUAL="nvim"
 export ZSH="$HOME/.oh-my-zsh"
 export PATH="$PATH:$HOME/.rvm/bin"
 export NVM_DIR="$HOME/.nvm"
@@ -22,8 +23,10 @@ source $ZSH/oh-my-zsh.sh
 alias vi=nvim
 alias vim=nvim
 alias tmux="tmux -2"
+alias ntmux="tmux new -A -s dev"
 alias rg="rg -g '!*.bundle.*.js' -g '!vendor' -p"
 # alias docker="docker.exe"
 # alias docker-compose="docker-compose.exe"
 
 bindkey -e
+
