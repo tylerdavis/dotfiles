@@ -32,8 +32,8 @@ call plug#begin('~/.local/share/nvim/plugged')
     nmap <leader>7 <Plug>AirlineSelectTab7
     nmap <leader>8 <Plug>AirlineSelectTab8
     nmap <leader>9 <Plug>AirlineSelectTab9
-    nmap <A-]> <Plug>AirlineSelectPrevTab
-    nmap <A-[> <Plug>AirlineSelectNextTab
+    nmap <A-[> <Plug>AirlineSelectPrevTab
+    nmap <A-]> <Plug>AirlineSelectNextTab
   " }}}
 
   Plug 'christoomey/vim-tmux-navigator'
@@ -80,6 +80,15 @@ call plug#begin('~/.local/share/nvim/plugged')
     autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
     nnoremap - :NERDTreeToggle<CR>
   " }}}
+  
+  Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
+  " {{{
+  " Run this after install once
+    " :CocInstall coc-solargraph coc-html coc-tsserver coc-emmet coc-json coc-highlight coc-yaml coc-css
+    set hidden
+    set cmdheight=2
+    set updatetime=300
+  " }}}
 
   Plug 'othree/javascript-libraries-syntax.vim'
   " {{{
@@ -112,6 +121,19 @@ call plug#begin('~/.local/share/nvim/plugged')
     " let g:user_emmet_mode='a'
     " let g:user_emmet_expandabbr_key='<Tab>'
     " imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
+  " }}}
+
+  Plug 'chaoren/vim-wordmotion'
+  " {{{
+    let g:wordmotion_mappings = {
+    \ 'w' : '<M-w>',
+    \ 'b' : '<M-b>',
+    \ 'e' : '<M-e>',
+    \ 'ge' : 'g<M-e>',
+    \ 'aw' : 'a<M-w>',
+    \ 'iw' : 'i<M-w>',
+    \ '<C-R><C-W>' : '<C-R><M-w>'
+    \ }
   " }}}
 
   Plug 'airblade/vim-gitgutter'
@@ -240,4 +262,4 @@ nnoremap <Leader>w :w<CR>
 nnoremap <Leader>- <C-w>s
 " Split the window vertically
 nnoremap <Leader>\ <C-w>v
-
+nnoremap <Leader>d :bd<CR>
