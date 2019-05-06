@@ -44,22 +44,21 @@ call plug#begin('~/.local/share/nvim/plugged')
     nnoremap <silent> <M-j> :TmuxNavigateDown<cr>
     nnoremap <silent> <M-k> :TmuxNavigateUp<cr>
     nnoremap <silent> <M-l> :TmuxNavigateRight<cr>
-    " nnoremap <silent> {Previous-Mapping} :TmuxNavigatePrevious<cr>
   " }}}
   Plug 'edkolev/tmuxline.vim'
-
-  Plug 'sjl/gundo.vim'
-  " {{{
-    set undodir=~/.vim/undodir
-    set undofile
-    nnoremap <silent> <Leader>gu :GundoToggle<CR>
-  " }}}
 
   Plug 'terryma/vim-multiple-cursors'
 
   Plug 'sbdchd/neoformat'
 
-  Plug 'ngmy/vim-rubocop'
+  Plug 'w0rp/ale'
+  " {{{
+    let g:ale_linters = { 'ruby': ['ruby',  'solargraph', 'rubocop', 'brakeman'] }
+    let g:ale_ruby_rubocop_executable = 'env rubocop'
+    let g:ale_sign_error = '!'
+    let g:ale_sign_warning = '?'
+    nmap <leader>[ :ALEGoToDefinition<CR>
+  " }}} 
 
   Plug 'vim-ruby/vim-ruby'
   Plug 'tpope/vim-rails'
@@ -71,7 +70,6 @@ call plug#begin('~/.local/share/nvim/plugged')
   " }}}
 
   Plug 'tpope/vim-surround'
-
   Plug 'tpope/vim-endwise'
 
   Plug 'scrooloose/nerdtree'
@@ -79,6 +77,11 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'Xuyuanp/nerdtree-git-plugin'
     autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
     nnoremap - :NERDTreeToggle<CR>
+  " }}}
+  
+  Plug 'mbbill/undotree'
+  " {{{
+    nmap <leader>u :UndotreeToggle<cr>
   " }}}
   
   Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
@@ -109,7 +112,6 @@ call plug#begin('~/.local/share/nvim/plugged')
     let g:syntastic_auto_loc_list = 1
     let g:syntastic_check_on_open = 1
     let g:syntastic_check_on_wq = 0
-    " let g:syntastic_rust_checkers = ['cargo']
   " }}}
 
   Plug 'jiangmiao/auto-pairs'
@@ -117,11 +119,6 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'justinmk/vim-sneak'
   Plug 'Valloric/MatchTagAlways' 
   Plug 'mattn/emmet-vim'
-  " {{{
-    " let g:user_emmet_mode='a'
-    " let g:user_emmet_expandabbr_key='<Tab>'
-    " imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
-  " }}}
 
   Plug 'chaoren/vim-wordmotion'
   " {{{
