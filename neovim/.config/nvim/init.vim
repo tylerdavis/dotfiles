@@ -60,6 +60,8 @@ call plug#begin('~/.local/share/nvim/plugged')
     nmap <leader>[ :ALEGoToDefinition<CR>
   " }}} 
 
+  Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+
   Plug 'vim-ruby/vim-ruby'
   Plug 'tpope/vim-rails'
   Plug 'tpope/vim-fugitive'
