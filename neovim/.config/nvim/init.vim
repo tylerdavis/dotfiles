@@ -47,7 +47,7 @@ call plug#begin('~/.local/share/nvim/plugged')
   " }}}
   Plug 'edkolev/tmuxline.vim'
 
-  Plug 'terryma/vim-multiple-cursors'
+  Plug 'nelstrom/vim-visual-star-search'
 
   Plug 'sbdchd/neoformat'
 
